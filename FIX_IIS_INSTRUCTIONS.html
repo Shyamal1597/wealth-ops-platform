@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix IIS Reverse Proxy - Instructions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #FF0000;
+            border-bottom: 3px solid #FF0000;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #DC0000;
+            margin-top: 30px;
+        }
+        .step {
+            background: #f9f9f9;
+            border-left: 4px solid #FF0000;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step-number {
+            background: #FF0000;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .file-path {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .option {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Fix IIS Reverse Proxy Configuration</h1>
+
+        <div class="warning">
+            <strong>⚠️ Current Issue:</strong><br>
+            Your website shows a 500 Internal Server Error because IIS Application Request Routing (ARR) is either not installed or not enabled.
+        </div>
+
+        <h2>Solution: Enable ARR Proxy</h2>
+
+        <div class="option">
+            <h3>✅ Option 1: Run the Batch File (Easiest)</h3>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Locate the file:</strong><br>
+                <div class="file-path">C:\Users\SSFL-RETAIL-017\sunidhi-nextjs\ENABLE_ARR_PROXY.bat</div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Right-click on the file</strong> and select <strong>"Run as administrator"</strong>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Click "Yes"</strong> when Windows asks for permission (UAC dialog)
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Follow the on-screen instructions</strong>
+            </div>
+        </div>
+
+        <div class="option">
+            <h3>🔄 Option 2: If Option 1 Fails (ARR Not Installed)</h3>
+
+            <p>If the batch file shows an error that ARR is not installed, you need to install it first:</p>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Download ARR 3.0 from Microsoft:</strong><br>
+                Visit: <a href="https://www.iis.net/downloads/microsoft/application-request-routing" target="_blank">
+                    https://www.iis.net/downloads/microsoft/application-request-routing
+                </a>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Install ARR 3.0</strong> by running the downloaded installer
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>After installation</strong>, run the <code>ENABLE_ARR_PROXY.bat</code> file again (as administrator)
+            </div>
+        </div>
+
+        <div class="success">
+            <h3>✨ After Success:</h3>
+            <p>Your website will be accessible at:</p>
+            <ul>
+                <li><strong>Intranet URL:</strong> <a href="http://192.168.48.102" target="_blank">http://192.168.48.102</a></li>
+                <li><strong>Test URLs:</strong>
+                    <ul>
+                        <li><a href="http://192.168.48.102/about/story" target="_blank">http://192.168.48.102/about/story</a></li>
+                        <li><a href="http://192.168.48.102/login" target="_blank">http://192.168.48.102/login</a></li>
+                        <li><a href="http://192.168.48.102/feedback" target="_blank">http://192.168.48.102/feedback</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <h2>🔍 What This Does:</h2>
+        <ul>
+            <li>Enables IIS Application Request Routing (ARR) proxy functionality</li>
+            <li>Allows IIS to forward requests from port 80 to your Next.js server on port 3000</li>
+            <li>Makes your website accessible without the :3000 port number</li>
+            <li>Restarts IIS to apply the changes</li>
+        </ul>
+
+        <h2>📝 Notes:</h2>
+        <ul>
+            <li>Your Next.js server must be running on port 3000 for this to work</li>
+            <li>If your colleagues can't access the site, check Windows Firewall settings</li>
+            <li>The website is currently configured for intranet access at IP: 192.168.48.102</li>
+        </ul>
+
+        <div class="warning">
+            <strong>💡 Demo Login Credentials:</strong><br>
+            Username: <code>client1</code>, <code>client2</code>, <code>client3</code>, <code>client4</code>, or <code>client5</code><br>
+            Password: <code>Demo@123</code>
+        </div>
+    </div>
+</body>
+</html>

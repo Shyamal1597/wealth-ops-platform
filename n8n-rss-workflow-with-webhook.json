@@ -1,0 +1,135 @@
+{
+  "name": "Sunidhi RSS News Feed with Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+        "options": {}
+      },
+      "id": "1",
+      "name": "RSS Feed Reader - Economic Times",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.moneycontrol.com/rss/latestnews.xml",
+        "options": {}
+      },
+      "id": "2",
+      "name": "RSS Feed Reader - MoneyControl",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, 500]
+    },
+    {
+      "parameters": {
+        "url": "https://www.business-standard.com/rss/markets-106.rss",
+        "options": {}
+      },
+      "id": "3",
+      "name": "RSS Feed Reader - Business Standard",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, 700]
+    },
+    {
+      "parameters": {},
+      "id": "4",
+      "name": "Merge All Feeds",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format RSS data for the Sunidhi website\nconst items = $input.all();\n\n// Sort by date (newest first)\nconst sortedItems = items.sort((a, b) => {\n  const dateA = new Date(a.json.pubDate || a.json.isoDate || 0);\n  const dateB = new Date(b.json.pubDate || b.json.isoDate || 0);\n  return dateB - dateA;\n});\n\n// Take only the latest 20 articles\nconst latestArticles = sortedItems.slice(0, 20);\n\n// Format articles for the website\nconst articles = latestArticles.map(item => {\n  const json = item.json;\n  \n  return {\n    title: json.title || 'Untitled',\n    description: json.description || json.contentSnippet || json.summary || '',\n    link: json.link || json.url || '',\n    pubDate: json.pubDate || json.isoDate || new Date().toISOString(),\n    source: json.creator || json['dc:creator'] || extractSource(json.link) || 'Unknown',\n    author: json.author || json['dc:creator'] || ''\n  };\n});\n\n// Helper function to extract source from URL\nfunction extractSource(url) {\n  if (!url) return 'Unknown';\n  try {\n    const hostname = new URL(url).hostname;\n    if (hostname.includes('economictimes')) return 'Economic Times';\n    if (hostname.includes('moneycontrol')) return 'MoneyControl';\n    if (hostname.includes('business-standard')) return 'Business Standard';\n    return hostname.replace('www.', '').split('.')[0];\n  } catch {\n    return 'Unknown';\n  }\n}\n\n// Return in the format expected by the website\nreturn [{ json: { articles } }];"
+      },
+      "id": "5",
+      "name": "Format Data for Website",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 500]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "sunidhi-news",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "6",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [850, 500],
+      "webhookId": "sunidhi-news"
+    }
+  ],
+  "connections": {
+    "RSS Feed Reader - Economic Times": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Feed Reader - MoneyControl": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "RSS Feed Reader - Business Standard": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge All Feeds": {
+      "main": [
+        [
+          {
+            "node": "Format Data for Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Data for Website": {
+      "main": [
+        [
+          {
+            "node": "Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-12-16T07:00:00.000Z",
+  "versionId": "1"
+}

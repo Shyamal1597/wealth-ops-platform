@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --border: 214 32% 91%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Global link styling for better visibility */
+  a:not(.no-link-style) {
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  a:not(.no-link-style):hover {
+    text-decoration: underline;
+  }
+
+  /* Exception for buttons styled as links */
+  button a,
+  .btn a,
+  [role="button"] a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button a:hover,
+  .btn a:hover,
+  [role="button"] a:hover {
+    text-decoration: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-timeline-marquee {
+  animation: marquee 5s linear infinite;
+  will-change: transform;
+}
+
+.animate-timeline-marquee:hover {
+  animation-play-state: paused;
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS Feed Setup - Complete in 2 Minutes!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .step h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .code {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .alert-success {
+            background: #d1f4e0;
+            border-color: #10b981;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+        }
+        .checklist li::before {
+            content: "☐ ";
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: #667eea;
+        }
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+        #webhookStatus {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 RSS Feed Setup</h1>
+        <p class="subtitle">Complete these 3 simple steps</p>
+
+        <div class="alert alert-success">
+            <strong>✅ I've already done this for you:</strong>
+            <ul>
+                <li>Created the n8n workflow</li>
+                <li>Configured environment variables</li>
+                <li>Set up API routes</li>
+                <li>Updated the Daily Updates page</li>
+            </ul>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="step">
+            <h2><span class="step-number">1</span> Import Workflow in n8n</h2>
+            <p><strong>Time:</strong> 30 seconds</p>
+            <ol>
+                <li>Click this button to open n8n:</li>
+            </ol>
+            <button class="btn" onclick="window.open('http://localhost:5678', '_blank')">
+                🔗 Open n8n
+            </button>
+            <ol start="2">
+                <li>In n8n, click the <strong>"+"</strong> button (top-right)</li>
+                <li>Select <strong>"Import from File"</strong></li>
+                <li>Choose file: <code>n8n-rss-workflow-with-webhook.json</code></li>
+                <li>Click <strong>Import</strong></li>
+            </ol>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+            <h2><span class="step-number">2</span> Activate the Workflow</h2>
+            <p><strong>Time:</strong> 5 seconds</p>
+            <ol>
+                <li>Click the <strong>toggle switch</strong> (top-right in n8n)</li>
+                <li>Make sure it turns <strong style="color: #10b981;">GREEN ✅</strong></li>
+                <li>Status should say <strong>"Active"</strong></li>
+            </ol>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+            <h2><span class="step-number">3</span> Test Your Webhook</h2>
+            <p><strong>Time:</strong> 10 seconds</p>
+            <p>Click this button to test if the webhook is working:</p>
+            <button class="btn btn-success" onclick="testWebhook()">
+                🧪 Test Webhook
+            </button>
+            <div id="webhookResult" class="status" style="display: none;">
+                <div id="webhookStatus"></div>
+                <div id="webhookData" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <div class="alert">
+            <h3>📋 Quick Checklist:</h3>
+            <ul class="checklist">
+                <li>Workflow imported in n8n</li>
+                <li>Toggle switch is GREEN (active)</li>
+                <li>Webhook test shows articles</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <h3>✅ All Done? View Your Live News Feed!</h3>
+            <button class="btn btn-success" onclick="window.open('http://localhost:3001/markets/updates', '_blank')" style="font-size: 1.2em; padding: 20px 40px;">
+                🚀 Open Daily Updates Page
+            </button>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3>📁 Files in Your Project:</h3>
+            <ul>
+                <li><code>n8n-rss-workflow-with-webhook.json</code> - Import this file</li>
+                <li><code>.env.local</code> - Already configured</li>
+                <li><code>QUICK_N8N_SETUP.md</code> - Detailed guide</li>
+                <li><code>VISUAL_GUIDE.md</code> - Step-by-step instructions</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function testWebhook() {
+            const resultDiv = document.getElementById('webhookResult');
+            const statusDiv = document.getElementById('webhookStatus');
+            const dataDiv = document.getElementById('webhookData');
+
+            resultDiv.style.display = 'block';
+            statusDiv.innerHTML = '⏳ Testing webhook...';
+            statusDiv.style.color = '#666';
+            dataDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('http://localhost:5678/webhook/sunidhi-news');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const articleCount = Array.isArray(data) ? data.length : (data.articles ? data.articles.length : 0);
+
+                statusDiv.innerHTML = '✅ Webhook is Working!';
+                statusDiv.style.color = '#10b981';
+                dataDiv.innerHTML = `
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <strong>Found ${articleCount} articles!</strong><br>
+                        <small style="color: #666;">Your RSS feed is ready to use.</small>
+                    </div>
+                `;
+
+                // Auto-open the updates page after successful test
+                setTimeout(() => {
+                    if (confirm('Webhook is working! Open the Daily Updates page now?')) {
+                        window.open('http://localhost:3001/markets/updates', '_blank');
+                    }
+                }, 1000);
+
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Webhook Not Working Yet';
+                statusDiv.style.color = '#dc2626';
+                dataDiv.innerHTML = `
+                    <div style="background: #fee; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <strong>Error:</strong> ${error.message}<br><br>
+                        <strong>Make sure you:</strong>
+                        <ol style="text-align: left; margin-top: 10px;">
+                            <li>Imported the workflow in n8n</li>
+                            <li>Activated it (green toggle)</li>
+                            <li>n8n is running on port 5678</li>
+                        </ol>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-test on page load after 2 seconds
+        setTimeout(() => {
+            console.log('Page loaded, ready for workflow import');
+        }, 2000);
+    </script>
+</body>
+</html>
