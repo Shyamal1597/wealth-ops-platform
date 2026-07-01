@@ -2,7 +2,7 @@
 
 Production-deployed corporate website for a **SEBI-registered stock broker and RBI-registered NBFC** with 30+ years of operations. Built from scratch as a complete replacement for a legacy PHP site — handles authenticated research report delivery, a client login portal with dual-channel OTP, an admin CMS, and a real-time NSE RSS aggregator.
 
-> **Live** at [sunidhisecurities.com](https://sunidhisecurities.com)
+> **Live** at [sunidhisecurities.com](https://beta.sunidhi.com)
 
 ---
 
