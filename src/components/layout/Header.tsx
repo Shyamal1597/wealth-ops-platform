@@ -26,14 +26,12 @@ export default function Header() {
 
   const navigation = {
     expertise: [
-      { name: "Retail Equity", href: "/expertise/retail-equity" },
+      { name: "Retail Equity & Equity Trading", href: "/expertise/retail-equity" },
       { name: "Institution Equity (Corporate)", href: "/expertise/institution-equity" },
       { name: "Margin Trading Facility (MTF)", href: "/expertise/mtf" },
-      { name: "Commodities Trading", href: "/expertise/commodities-trading" },
-      { name: "Foreign Exchange", href: "/expertise/foreign-exchange" },
+      { name: "Derivatives & Commodity Trading", href: "/expertise/commodities-trading" },
       { name: "Wholesale Debt Market", href: "/expertise/wholesale-debt-market" },
-      { name: "Mutual Funds", href: "/services/mutual-funds" },
-      { name: "Mutual Fund Distribution", href: "/expertise/mutual-fund-distribution" },
+      { name: "Mutual Funds & Wealth Management", href: "/expertise/mutual-fund-distribution" },
       { name: "Depository Services", href: "/expertise/depository-services" },
       { name: "Research", href: "/expertise/research" },
       { name: "Sunidhi Capital (NBFC)", href: "/expertise/sunidhi-capital" },

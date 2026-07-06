@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-gray-300">
       {/* Main Footer */}
       <Container>
-        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">
@@ -48,19 +48,6 @@ export default function Footer() {
               <li><Link href="/about/careers" className="hover:text-white transition-colors">Careers</Link></li>
               <li><Link href="/about/foundation" className="hover:text-white transition-colors">Sunidhi Foundation</Link></li>
               <li><Link href="/support/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Services</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/services/equity-trading" className="hover:text-white">Equity Trading</Link></li>
-              <li><Link href="/services/derivatives" className="hover:text-white">Derivatives</Link></li>
-              <li><Link href="/services/debt-market" className="hover:text-white">Debt Market</Link></li>
-              <li><Link href="/expertise/foreign-exchange" className="hover:text-white">Foreign Exchange</Link></li>
-              <li><Link href="/services/insurance" className="hover:text-white">Insurance</Link></li>
-              <li><Link href="/services/wealth-management" className="hover:text-white">Wealth Management</Link></li>
             </ul>
           </div>
 

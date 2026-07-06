@@ -152,13 +152,13 @@ export default function LandingPage() {
       title: "Stock Market Trading",
       description: "Open trading account for seamless stock market and trading across NSE and BSE with best trading app in India",
       icon: TrendingUp,
-      link: "/services/equity-trading",
+      link: "/expertise/retail-equity",
     },
     {
       title: "Intraday Trading & F&O",
       description: "Access intraday trading, futures and options in capital market with comprehensive analysis",
       icon: BarChart3,
-      link: "/services/derivatives",
+      link: "/expertise/commodities-trading",
     },
     {
       title: "Commodity Trading",
@@ -167,10 +167,10 @@ export default function LandingPage() {
       link: "/expertise/commodities-trading",
     },
     {
-      title: "Forex Trading in India",
-      description: "Currency trading with competitive spreads on our forex trading in India platform",
+      title: "Forex & Currency Derivatives",
+      description: "Currency derivatives trading with competitive spreads through our derivatives desk",
       icon: Shield,
-      link: "/expertise/foreign-exchange",
+      link: "/expertise/commodities-trading",
     },
     {
       title: "IPO Investments",
@@ -182,7 +182,7 @@ export default function LandingPage() {
       title: "Portfolio Management",
       description: "Professional wealth management services tailored to your financial goals",
       icon: Award,
-      link: "/services/portfolio-management",
+      link: "/expertise/mutual-fund-distribution",
     },
   ];
 

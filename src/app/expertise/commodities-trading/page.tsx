@@ -1,13 +1,15 @@
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
-import { Coins, Award, TrendingUp, CheckCircle2, Building2, Banknote } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Coins, Award, TrendingUp, Building2, Banknote, ArrowRight } from "lucide-react";
 
 export default function CommoditiesTradingPage() {
   return (
     <>
       <section className="bg-black text-white py-16">
         <Container>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Commodity Market - Commodities Trading Platform</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Derivatives & Commodity Trading</h1>
           <p className="text-xl text-primary-100">
             Trade in commodity market with our advanced commodities trading platform. Access commodity trading with a robust dealing desk, comprising a strong and reliable team that exclusively caters to the commodity market with best trading app in India.
           </p>
@@ -106,6 +108,57 @@ export default function CommoditiesTradingPage() {
                 <p className="text-gray-600">Market Presence</p>
               </div>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Derivatives: Futures & Options */}
+      <section className="py-16 md:py-24">
+        <Container>
+          <div className="prose max-w-none">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Futures & Options Trading</h2>
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div>
+                <h3 className="text-xl font-semibold mb-4">What We Offer</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li>✓ Index Futures & Options (Nifty, Bank Nifty, Fin Nifty)</li>
+                  <li>✓ Stock Futures & Options</li>
+                  <li>✓ Currency Derivatives</li>
+                  <li>✓ Advanced option strategies</li>
+                  <li>✓ Margin calculator and risk tools</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Key Features</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li>✓ Low brokerage and competitive margins</li>
+                  <li>✓ Real-time options chain analysis</li>
+                  <li>✓ Option strategy builder</li>
+                  <li>✓ Volatility analysis tools</li>
+                  <li>✓ Dedicated derivatives research team</li>
+                  <li>✓ Risk management support</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-16 md:py-24 bg-primary-600 text-white">
+        <Container>
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Start Trading Derivatives & Commodities Today
+            </h2>
+            <p className="text-xl mb-8 text-primary-100">
+              Leverage our advanced tools and expert support to maximize your trading potential
+            </p>
+            <Button size="lg" variant="secondary" asChild>
+              <Link href="/open-account">
+                Open Free Account
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
           </div>
         </Container>
       </section>

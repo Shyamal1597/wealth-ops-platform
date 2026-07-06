@@ -5,6 +5,396 @@ All notable changes to the Sunidhi Securities & Finance Limited website will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-06-02 - Deployment Gaps on Beta Server: Daily Updates Permission + Downloads Page
+
+> This entry documents two mismatches between the local (production-ready) build and the current beta server deployment at `https://beta.sunidhi.com`. Both are deployment gaps, not bugs in the code.
+
+---
+
+### Gap 1 — Downloads & Forms Page (Code + Files Missing)
+
+**Symptom:** The beta `/support/downloads` page shows the old layout — a flat list with ~3 forms (Individual Account Opening, NRI Account Opening, Corporate Account Opening). The current version has **41 documents across 5 tabbed categories** with a completely different UI.
+
+**Root cause:** The beta is running the old `src/app/support/downloads/page.tsx`. The entire page was rewritten in v1.1.0, and the `public/forms/` directory (44 PDF files) was added. Neither the new code nor the PDF files were deployed to the beta server.
+
+**Fix — Two steps required (code change + file transfer):**
+
+**Step 1: Transfer the `public/forms/` directory to the beta server**
+
+Copy the entire `public/forms/` folder from the updated codebase to the server:
+```bash
+# From the source machine / updated codebase:
+scp -r ./public/forms/ user@betaserver:/path/to/app/public/forms/
+
+# Or via rsync:
+rsync -avz ./public/forms/ user@betaserver:/path/to/app/public/forms/
+```
+
+This directory contains **44 PDF files**. All download buttons on the new page point to `/forms/<filename>` — if this directory is missing, every download button will return a 404.
+
+Complete list of files that must be present in `public/forms/`:
+
+**Equity & BSE (19 files):**
+```
+1315486115Individual Client Registration form 09072025.pdf
+412079703Non-Individual Client Registration Form 09072025.pdf
+1636583788_CKYC-FORM_INDIVIDUAL.pdf
+1052170211_CKYC-KRA-FORM_NON-INDIVIDUAL.pdf
+632414905Individual Client -FATCA Format.pdf
+1938392331Non-Individual Client -FATCA Format.pdf
+509887835_FATCA-form-for-Individual.pdf
+774412172Nominee Form With Opt Out Self Declaration.pdf
+1425675770_Format-for-Availing-MTF-Facility_09072025.pdf
+841094080_DECLARATION-FOR--COMMODITY-CATEGORY.pdf
+397559448_Undertaking-Cum-Declaration-from-client-to-fetch-KRA---CKYC-Details.pdf
+1250232975_Combined-Account-closure-Form-for-Trading-and-DP.pdf
+1680636187_Self-Declaration-to-accept-Common-Email-id-and-Mobile-no._08022024.pdf
+607753444Combined-Modification-Form-for-Trading-and-DP-account-details.pdf
+735034110_SOP-for-Centralised-Demise-Information-of-demise-of-investor-through-KRA.pdf
+666780711_Client-Reactivation-Form---Trading.pdf
+309889068_Client-Reactivation-form-for-Non--Individual.pdf
+891067512_Family-Declaration-for-Common-Email--ID--and-Mobile-No..pdf
+326581155_FORMAT-OF-HUF-CREATION-DEED.pdf
+```
+
+**Depository (6 files):**
+```
+771283942Sunidhi Form-DMAT Final.pdf
+669219932_Request-instruction-slip.pdf
+2058630641Transmission_Request_Form-Death_of_Joint_Holder_New.pdf
+292820211Transmission_Request_Form-Death_of_Sole_Holder_where_nomination_is_recorded_New.pdf
+2065021145Repurchase_Redemption_Request_Form_for_Mutual_Fund_Units.pdf
+1915700324_Request-Letter-for-Addition-for-beneficiary-Details-for-executing-Off-Market-Transfer.pdf
+```
+
+**AP Support (3 files):**
+```
+1011287790_Updation-of-Additional-Office-(Branch)-address-of-AP.pdf
+796443294_Modification-in-e-mail-Id-Mobile-No-Contact-person-name-of-the-AP-.pdf
+998351678_Change-in-Registered-office-address-of-AP.pdf
+```
+
+**Mandatory Information (7 files):**
+```
+331897791List of AP with terminal details as on 31032026.pdf
+13556810602099879383Branch Details.pdf
+1595172966List-of-AP-cancelled-by-Members-on-account-of-Disciplinary-reason.pdf
+4637170071697863426_List-of-AP-cancelled-by-Members-on-account-of-Disciplinary-reason.pdf
+16090313USER-MANUAL-And-BASIC-REQUIRMENTS-EKYC-Version1.2.pdf
+720198387USER-MANUAL-And-BASIC-REQUIRMENTS-RE-KYC-Version1.2.pdf
+1936870993procedure_and_flow_chart_of_Client _grievance_Aug_08_2023.pdf
+```
+
+**Policies (6 files):**
+```
+276059171PMLA policy_combined _version I _28.03.2025.pdf
+1466033186_Policy-on-Treatment-of-Inactive-Clients.pdf
+1639914064_Policy-on-Prohibition-on-unauthenticated-news-circulation.pdf
+1163209386_Policy-on-Client-Code-Modification.pdf
+1379131523_Survellience-Policy-for-Trading.pdf
+391187829_Surveillance-Policy-for-Depository.pdf
+```
+
+**Step 2: Deploy the updated code and rebuild**
+
+The file `src/app/support/downloads/page.tsx` was completely rewritten. Deploy the latest codebase and rebuild:
+```bash
+# After transferring the updated src/ files:
+npm install        # only if package.json changed
+npm run build
+pm2 restart sunidhi-web
+```
+
+> ⚠️ **Order matters:** Transfer `public/forms/` BEFORE restarting the app. If you restart with the new code before the PDFs are in place, every download link on the page will 404.
+
+**What the new page looks like vs the old one:**
+
+| | Old (currently on beta) | New (v1.1.0+) |
+|---|---|---|
+| Layout | Flat list, 2 sections | 5 tabs |
+| Documents | ~3 forms | 41 documents |
+| Subtitle | "Access all important forms and documents…" | "41 documents across 5 categories" |
+| Categories | Account Opening, KYC | Equity & BSE, Depository, AP Support, Mandatory Info, Policies |
+| File source | Hardcoded external URLs | `public/forms/<filename>` served by Next.js |
+
+**Verification after deployment:**
+1. Open `https://beta.sunidhi.com/support/downloads`
+2. Confirm 5 tabs are visible: **Equity & BSE (19)**, **Depository (6)**, **AP Support (3)**, **Mandatory Information (7)**, **Policies (6)**
+3. Click the Download button on any form — it should download the PDF immediately
+4. If any Download returns 404, that specific PDF file is missing from `public/forms/` on the server
+
+---
+
+### Gap 2 — Daily Updates Tab Missing in Admin Dashboard (Data Fix Only)
+
+**Symptom:** Admin users Mrunali Bambulkar and Rajat Kumar do not see the "Daily Updates" tab in the admin dashboard on the beta site. The tab is visible on the local/production server.
+
+**Root cause:** The beta server's `data/admins.json` is a stale snapshot. The `manage_daily_updates` permission was granted to these two accounts in the local admin UI but the updated file was never synced to the beta server.
+
+Affected accounts:
+
+| Admin | Username | ID | Missing permission |
+|---|---|---|---|
+| Mrunali Bambulkar | `Mrunali` | `admin1768816827805` | `manage_daily_updates` |
+| Rajat Kumar | `Rajat` | `admin1768813898437` | `manage_daily_updates` |
+
+**Fix — Edit `data/admins.json` on the beta server**
+
+> **No code change. No rebuild. No pm2 restart required.**
+> The file is read on every request; changes take effect on the next login.
+
+**Step 1:** Open `/path/to/app/data/admins.json` on the beta server.
+
+**Step 2:** Find **Mrunali Bambulkar's** entry (search for id `admin1768816827805`).
+Change her permissions from:
+```json
+"permissions": [
+  "upload_reports"
+]
+```
+To:
+```json
+"permissions": [
+  "upload_reports",
+  "manage_daily_updates"
+]
+```
+
+**Step 3:** Find **Rajat Kumar's** entry (search for id `admin1768813898437`).
+Apply the identical change:
+```json
+"permissions": [
+  "upload_reports",
+  "manage_daily_updates"
+]
+```
+
+**Step 4:** Save the file and verify the JSON is valid (no trailing commas, no missing brackets).
+
+**Step 5:** Ask Mrunali or Rajat to log out and log back in. The "Daily Updates" tab will appear immediately.
+
+**Verification:** After login, the admin dashboard tab bar should show:
+```
+Research Reports (N)    Daily Updates (N)
+```
+
+---
+
+### Root Cause
+
+The beta server's `data/admins.json` is a stale snapshot — the `manage_daily_updates` permission was later granted to two accounts in the local admin UI but the updated file was never copied to the beta server. The application code is correct on both servers; the tab is hidden by a permission check, not a missing feature.
+
+Affected accounts on the beta server:
+
+| Admin | Username | ID | Missing permission |
+|---|---|---|---|
+| Mrunali Bambulkar | `Mrunali` | `admin1768816827805` | `manage_daily_updates` |
+| Rajat Kumar | `Rajat` | `admin1768813898437` | `manage_daily_updates` |
+
+The super admin (Rahul Bisht, `role: "super_admin"`) is unaffected — `super_admin` bypasses all permission-array checks in the code.
+
+### Fix — Edit `data/admins.json` on the beta server
+
+> **No code change. No rebuild. No pm2 restart required.**
+> The file is read on every request; changes take effect on the next page load.
+
+**Step 1:** Open the file on the beta server — typically at:
+```
+/var/www/sunidhi-web/data/admins.json
+```
+
+**Step 2:** Find **Mrunali Bambulkar's** entry (search for `admin1768816827805`).
+Her current permissions array looks like:
+```json
+"permissions": [
+  "upload_reports"
+]
+```
+Add `manage_daily_updates` so it becomes:
+```json
+"permissions": [
+  "upload_reports",
+  "manage_daily_updates"
+]
+```
+
+**Step 3:** Find **Rajat Kumar's** entry (search for `admin1768813898437`).
+Apply the identical change:
+```json
+"permissions": [
+  "upload_reports",
+  "manage_daily_updates"
+]
+```
+
+**Step 4:** Save the file. Check that the JSON is valid — no trailing commas, no missing brackets.
+
+**Step 5:** Ask either admin to log out and log back in. The dashboard reloads permissions from `data/admins.json` on every login; they will see the **Daily Updates** tab immediately.
+
+### Verification
+
+After the edit, log in as Mrunali Bambulkar on the beta site. The admin dashboard tab bar should show:
+```
+Research Reports (N)    Daily Updates (N)
+```
+If only "Research Reports" appears, the JSON file was not saved correctly or has a syntax error.
+
+---
+
+## [1.2.0] - 2026-06-02 - Blog Image Upload, Old Website Button & Admin Session Bug Fix
+
+### Fixed — Critical: Admin Immediate-Logout Race Condition
+
+**File changed:** `src/hooks/useAdminActivitySession.ts`
+
+**Problem:** Super admin (and any admin) was being logged out instantly upon successful login. The user would be redirected back to `/admin/login` within milliseconds of the dashboard loading.
+
+**Root cause:** The `useAdminActivitySession` hook was calling `refreshToken()` on mount. On the dashboard page, two async calls fired concurrently the moment the component tree mounted:
+1. `GET /api/admin/me` — the dashboard's own auth check, carrying Token1 in the cookie
+2. `POST /api/admin/refresh` — fired by the session guard hook on mount, also carrying Token1
+
+If the refresh request reached the server first:
+- Server invalidated Token1, created Token2, stored `{ adminId → T2 }` in `data/admin-sessions.json`
+- The in-flight `/api/admin/me` request, still carrying Token1, then failed `isAdminSessionValid` (T1 < T2) → returned `401`
+- Dashboard's 401 handler redirected to `/admin/login` → user sees instant logout
+
+**Fix (one-line removal):** The `refreshToken()` call on mount was removed entirely. The token is issued seconds earlier during login and needs no refresh. `lastRefreshRef.current = Date.now()` is kept so the first activity-driven refresh fires correctly after the 90-second throttle window.
+
+**Specific change in `src/hooks/useAdminActivitySession.ts`:**
+```typescript
+// REMOVED (was causing the race condition):
+// refreshToken();  ← line 105, deleted
+
+// KEPT (throttle initialisation — no change):
+lastRefreshRef.current = Date.now();
+```
+
+No other files were touched. The `AdminSessionGuard` component, the `/api/admin/refresh` endpoint, and the sliding-session timing logic are all unchanged and continue to work correctly.
+
+---
+
+### Added — Blog Featured Image Upload
+
+**Problem:** The blog creation form in the admin dashboard had a plain text input labelled "Featured Image URL" — a non-starter for non-technical staff who don't know file system paths.
+
+**New files:**
+
+- **`src/app/api/admin/blogs/upload-image/route.ts`** (new API endpoint)
+  - `POST /api/admin/blogs/upload-image`
+  - Auth-gated: requires valid `admin-token` cookie
+  - Accepts `multipart/form-data` with a `file` field
+  - Validates MIME type: `image/jpeg`, `image/jpg`, `image/png`, `image/webp` only
+  - Validates size: max 5 MB
+  - Saves to `public/images/blog/blog-<timestamp>.<ext>` — timestamp filename prevents path traversal and collisions; original filename is never reflected into the filesystem
+  - Returns `{ path: "/images/blog/blog-<timestamp>.<ext>" }` on success
+  - Returns `{ error: "..." }` with appropriate 4xx status on failure
+
+**Files modified:**
+
+- **`src/app/admin/dashboard/page.tsx`**
+  - Added `useRef` to the React import line
+  - Added two new state fields:
+    - `blogImageUploading: boolean` (controls button disabled state and spinner)
+    - `blogImageInputRef: RefObject<HTMLInputElement>` (hidden file input trigger)
+  - Added `handleBlogImageUpload` async function (before `handleCreateBlog`):
+    - Reads the selected file, POST to `/api/admin/blogs/upload-image` with `FormData`
+    - On success: sets `blogForm.image` to the returned path
+    - On failure: shows `alert()` with the server error message
+    - Always resets `e.target.value = ""` in `finally` so the same file can be re-selected
+  - Replaced the "Featured Image URL" `<input type="text">` block with:
+    - A hidden `<input type="file" ref={blogImageInputRef} accept="image/jpeg,image/jpg,image/png,image/webp" className="hidden">`
+    - An image preview `<img>` (shown only when `blogForm.image` is set, with `onError` fallback to hide)
+    - A "Choose Image" / "Change Image" button that calls `blogImageInputRef.current?.click()` — disabled and shows spinner while upload is in progress
+    - A "✓ Image ready" confirmation line shown after a successful upload
+    - A "JPG, PNG or WEBP · Max 5 MB" hint line below the button
+
+**Runtime storage:** Uploaded blog images are saved to `public/images/blog/`. This directory is excluded from the git repository (added to `.gitignore` as `/public/images/blog/`) and must exist on the server with write permission for the Node.js process.
+
+---
+
+### Added — "Old Website" Redirect Button in Header
+
+**Motivation:** The old Sunidhi Securities website at `https://www.sunidhi.com/default.aspx` is still used by long-standing clients. BSE implemented a similar "Old Website" pill button on their redesigned site — this follows the same pattern.
+
+**File modified:** `src/components/layout/Header.tsx`
+
+**Changes made:**
+
+1. Added `ExternalLink` to the `lucide-react` import (alongside existing icons)
+
+2. **Desktop top bar** — inserted a pill button to the right of the existing utility links (Search, Support, Help):
+   ```html
+   <a href="https://www.sunidhi.com/default.aspx" target="_blank" rel="noopener noreferrer"
+      aria-label="Visit old Sunidhi website (opens in a new tab)">
+     <ExternalLink className="h-3 w-3" />  Old Website
+   </a>
+   ```
+   Styled as a white-bordered semi-transparent pill against the `primary-600` red top bar; fills solid white on hover with red text.
+
+3. **Mobile menu** — added a full-width "Visit Old Website" outlined button at the bottom of the mobile menu drawer, above the close button row. Same `target="_blank" rel="noopener noreferrer"` attributes.
+
+No navigation structure, routing, or other header logic was modified.
+
+---
+
+### Documentation — CMOTS README Updated
+
+**File changed:** `CMOT README BEFORE DEPLOYIING/CMOTS_README.md`
+
+The following corrections and additions were made to bring the deployment README in sync with the actual codebase state. This is the reference document given to the hosting/deployment team.
+
+**Corrections (stale information fixed):**
+
+| Section | Old (wrong) | New (correct) |
+|---|---|---|
+| Authentication & Security — JWT | "Tokens expire in 7 days" | Admin: 5-minute sliding window (refreshed via `/api/admin/refresh`); Client: 1 hour; User: 7 days |
+| Authentication & Security — Rate Limiter | "In-memory rate limiting applied to all API endpoints" | File-backed rate limiting; state persisted to `data/rate-limit.json` — required because Next.js API routes are separate module bundles |
+| Project Structure — `rate-limiter.ts` | `# In-memory API rate limiting` | `# File-backed API rate limiting (persisted to data/rate-limit.json)` |
+
+**Additions to Data Directory table:**
+
+| New row added | Details |
+|---|---|
+| `rate-limit.json` | API rate-limit state — per-IP request timestamps (auto-managed). Can be deployed as empty `{}`. |
+
+**Additions to Public Assets table:**
+
+| New rows added | Details |
+|---|---|
+| `public/images/blog/` | Blog post featured images uploaded via admin dashboard |
+| `public/forms/` | Account opening & KYC form PDFs — 41 downloadable files (Downloads & Forms page) |
+
+**Additions to Project Structure tree:**
+- `public/images/blog/` subfolder under `public/images/`
+- `public/forms/` directory
+- `src/components/admin/` directory (containing `AdminSessionGuard`)
+- `src/hooks/` directory (containing `useAdminActivitySession.ts`)
+- `data/rate-limit.json` file entry
+- Header comment updated: "Header, Footer, Navigation (incl. 'Old Website' redirect button)"
+
+**New API endpoints documented:**
+
+- `POST /api/admin/blogs/upload-image` — blog featured image upload (see §Admin Blog Image Upload above)
+- `POST /api/admin/refresh` — admin sliding session token refresh (see §Admin Session — Refresh Endpoint above)
+
+**New section added — Admin Sliding Session** (under Security & VAPT Remediation):
+- Documents the 5-minute inactivity timeout, 60-second warning overlay, and 90-second refresh throttle
+- Lists the three component files involved (`useAdminActivitySession.ts`, `AdminSessionGuard.tsx`, `refresh/route.ts`)
+- Includes timing constants table
+- Documents the critical "no refresh on mount" constraint with explanation of the race condition it prevents
+
+**Addition to First Deployment Step 3:**
+- `rate-limit.json` added to the verification checklist of required data files
+- Added note clarifying which files can be deployed as empty `{}` (session stores + `rate-limit.json`)
+
+**Addition to Troubleshooting table:**
+
+| New row | Symptom | Fix |
+|---|---|---|
+| Admin redirect loop | Admin immediately logged out after login | Do NOT add on-mount `refreshToken()` call — architectural constraint, see §Admin Sliding Session |
+
+---
+
 ## [1.1.0] - 2026-05-19 - Full VAPT Remediation, Downloads Page Rebuild & Sliding Admin Session
 
 ### Added — Downloads & Forms Page Rebuild
