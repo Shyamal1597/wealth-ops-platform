@@ -52,6 +52,16 @@
   [role="button"] a:hover {
     text-decoration: none;
   }
+
+  /* Programmatic focus target set by RouteFocusManager after a route change
+     (including browser Back/Forward) — needs an explicit rule since it's
+     focused via .focus() in JS rather than real keyboard interaction, which
+     :focus-visible does not reliably match. */
+  [data-route-focus-target]:focus {
+    outline: 3px solid #DC2626;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
 }
 
 @layer utilities {

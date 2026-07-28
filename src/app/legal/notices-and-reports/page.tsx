@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { FileText, Download, BookOpen, Users, Gavel } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Notices & Reports",
+  description: "Statutory notices, annual reports, and regulatory filings published by Sunidhi Securities & Finance Limited.",
+};
 
 const annualReports = [
     {
@@ -100,7 +106,7 @@ export default function AnnualReportsPage() {
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <FileText className="h-5 w-5 text-red-500" />
+                                                <FileText className="h-5 w-5 text-red-500" aria-hidden="true" />
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-gray-900">{report.title}</h3>
@@ -111,9 +117,10 @@ export default function AnnualReportsPage() {
                                             href={`/legal-documents/notices-and-reports/${report.fileName}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            aria-label={`View ${report.title} PDF (opens in a new tab)`}
                                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-md hover:bg-primary-700 transition-colors flex-shrink-0"
                                         >
-                                            <Download className="h-4 w-4" />
+                                            <Download className="h-4 w-4" aria-hidden="true" />
                                             View PDF
                                         </a>
                                     </div>
@@ -141,7 +148,7 @@ export default function AnnualReportsPage() {
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <FileText className="h-5 w-5 text-blue-500" />
+                                                <FileText className="h-5 w-5 text-blue-500" aria-hidden="true" />
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-gray-900">{report.title}</h3>
@@ -151,9 +158,10 @@ export default function AnnualReportsPage() {
                                             href={`/legal-documents/notices-and-reports/${report.fileName}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            aria-label={`View ${report.title} PDF (opens in a new tab)`}
                                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex-shrink-0"
                                         >
-                                            <Download className="h-4 w-4" />
+                                            <Download className="h-4 w-4" aria-hidden="true" />
                                             View PDF
                                         </a>
                                     </div>
@@ -181,7 +189,7 @@ export default function AnnualReportsPage() {
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <FileText className="h-5 w-5 text-amber-500" />
+                                                <FileText className="h-5 w-5 text-amber-500" aria-hidden="true" />
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-gray-900">{report.title}</h3>
@@ -192,9 +200,10 @@ export default function AnnualReportsPage() {
                                             href={`/legal-documents/notices-and-reports/${report.fileName}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white text-sm font-medium rounded-md hover:bg-amber-700 transition-colors flex-shrink-0"
+                                            aria-label={`View ${report.title} PDF (opens in a new tab)`}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-700 text-white text-sm font-medium rounded-md hover:bg-amber-800 transition-colors flex-shrink-0"
                                         >
-                                            <Download className="h-4 w-4" />
+                                            <Download className="h-4 w-4" aria-hidden="true" />
                                             View PDF
                                         </a>
                                     </div>

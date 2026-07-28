@@ -253,7 +253,7 @@ export default function FeedbackPage() {
               </p>
               <p className="mt-2">
                 For urgent matters, please contact us directly at{" "}
-                <a href="mailto:onlinetrading@sunidhi.com" className="text-primary-600 hover:underline">
+                <a href="mailto:onlinetrading@sunidhi.com" className="text-primary-600 !underline hover:text-primary-700">
                   onlinetrading@sunidhi.com
                 </a>
               </p>

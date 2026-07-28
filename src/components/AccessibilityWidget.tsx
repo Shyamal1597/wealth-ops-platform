@@ -34,8 +34,14 @@ function getReadableText(el: HTMLElement): string {
     // 4. innerText (trim and limit length)
     const innerText = el.innerText?.trim();
     if (innerText) {
-        // Only read the first 200 characters to avoid reading enormous blocks
-        return innerText.length > 200 ? innerText.substring(0, 200) + '...' : innerText;
+        // Cap only genuinely enormous blocks (e.g. a click landing on a large
+        // container), not ordinary paragraphs — and if truncation is needed,
+        // cut at the last whole word instead of mid-word.
+        const MAX_CHARS = 1000;
+        if (innerText.length <= MAX_CHARS) return innerText;
+        const truncated = innerText.slice(0, MAX_CHARS);
+        const lastSpace = truncated.lastIndexOf(' ');
+        return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + '...';
     }
 
     // 5. title attribute
@@ -319,12 +325,19 @@ export default function AccessibilityWidget() {
     return (
         <button
             data-tts-toggle
+            type="button"
             onClick={toggleTTS}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    toggleTTS();
+                }
+            }}
             aria-label={ttsEnabled ? 'Disable Accessibility Reader' : 'Enable Accessibility Reader'}
             title={ttsEnabled ? 'Disable Accessibility Reader (Alt+T)' : 'Enable Accessibility Reader (Alt+T)'}
             className={`
-        fixed bottom-6 right-6 z-[9999]
-        w-14 h-14 rounded-full
+        fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999]
+        w-11 h-11 sm:w-14 sm:h-14 rounded-full
         flex items-center justify-center
         shadow-lg border-2
         transition-all duration-300 ease-in-out
@@ -336,9 +349,9 @@ export default function AccessibilityWidget() {
       `}
         >
             {ttsEnabled ? (
-                <Volume2 className="h-6 w-6" />
+                <Volume2 className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
             ) : (
-                <VolumeX className="h-6 w-6" />
+                <VolumeX className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
             )}
         </button>
     );

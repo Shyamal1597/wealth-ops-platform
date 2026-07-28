@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, TrendingUp, Shield, CheckCircle2, Award, Briefcase, Phone, Mail, User, ArrowDown, ChevronRight, ChevronDown } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Sunidhi Capital Pvt Ltd (NBFC)",
+  description: "Capital solutions from Sunidhi's RBI-registered NBFC arm — loan against shares, personal loans, and business funding.",
+};
 
 export default function SunidhiCapitalPage() {
   return (
@@ -309,7 +315,7 @@ export default function SunidhiCapitalPage() {
               {/* Level 3 - Highest */}
               <div className="w-full md:w-1/3 relative z-10 flex flex-col">
                 <Card className="relative bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-xl hover:shadow-2xl transition-all duration-300 transform scale-100 border-t-4 border-t-amber-500 h-full flex flex-col justify-between min-h-[320px]">
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-8 py-2 rounded-full text-base font-bold shadow-lg z-10 uppercase tracking-wide whitespace-nowrap flex items-center gap-2">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-700 text-white px-8 py-2 rounded-full text-base font-bold shadow-lg z-10 uppercase tracking-wide whitespace-nowrap flex items-center gap-2">
                     Level 3 <Award size={16} className="text-white" />
                   </div>
                   <CardContent className="p-6 text-center pt-12 flex flex-col h-full justify-center">

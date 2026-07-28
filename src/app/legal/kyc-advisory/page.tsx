@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FileText, AlertCircle, CheckCircle2, Download, Calendar } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "KYC Advisory",
+  description: "KYC compliance advisory and guidance for opening and maintaining your trading and demat account.",
+};
 
 export default function KYCAdvisoryPage() {
   return (
@@ -27,7 +33,7 @@ export default function KYCAdvisoryPage() {
                   <div className="flex items-center gap-4">
                     <FileText className="h-10 w-10 text-primary-600" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">KYC Advisory Document</h3>
+                      <h2 className="font-semibold text-gray-900 text-lg">KYC Advisory Document</h2>
                       <p className="text-sm text-gray-600">Download the complete KYC compliance advisory</p>
                     </div>
                   </div>
@@ -35,9 +41,10 @@ export default function KYCAdvisoryPage() {
                     href="/legal-documents/Annexure-I-Advisory-for-KYC-updation.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="View KYC Advisory Document PDF (opens in a new tab)"
                     className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
                   >
-                    <Download className="h-5 w-5" />
+                    <Download className="h-5 w-5" aria-hidden="true" />
                     View PDF
                   </a>
                 </div>
@@ -47,10 +54,10 @@ export default function KYCAdvisoryPage() {
             {/* Important Notice */}
             <Card className="border-yellow-200 bg-yellow-50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-yellow-900">
-                  <AlertCircle className="h-6 w-6 text-yellow-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3 text-yellow-900">
+                  <AlertCircle className="h-6 w-6 text-yellow-600" aria-hidden="true" />
                   Important KYC Requirements
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-white p-4 rounded-lg border border-yellow-200">
@@ -93,10 +100,10 @@ export default function KYCAdvisoryPage() {
             {/* Deadline */}
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-red-900">
-                  <Calendar className="h-6 w-6 text-red-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3 text-red-900">
+                  <Calendar className="h-6 w-6 text-red-600" aria-hidden="true" />
                   Compliance Deadline
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">
@@ -108,10 +115,10 @@ export default function KYCAdvisoryPage() {
             {/* Consequences of Non-Compliance */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <AlertCircle className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Consequences of Non-Compliance
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
@@ -140,10 +147,10 @@ export default function KYCAdvisoryPage() {
             {/* How to Reactivate */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <CheckCircle2 className="h-6 w-6 text-green-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <CheckCircle2 className="h-6 w-6 text-green-600" aria-hidden="true" />
                   How to Reactivate Your Accounts
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -164,7 +171,7 @@ export default function KYCAdvisoryPage() {
             {/* Important Advice */}
             <Card className="border-blue-200 bg-blue-50">
               <CardHeader>
-                <CardTitle className="text-blue-900">Important Advice</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight text-blue-900">Important Advice</h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-gray-700 leading-relaxed">
