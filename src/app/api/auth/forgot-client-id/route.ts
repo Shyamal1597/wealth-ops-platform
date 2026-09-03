@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import { sendSmsOTP } from '@/lib/sms';
+import { findClientByContact } from '@/lib/client-db';
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,18 +10,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Contact information is required' }, { status: 400 });
         }
 
-        const clientsFilePath = join(process.cwd(), 'data', 'clients.json');
-
-        if (!existsSync(clientsFilePath)) {
-            return NextResponse.json({ message: 'If an account matches, recovery details have been sent.' });
-        }
-
-        const clientsData = JSON.parse(readFileSync(clientsFilePath, 'utf8'));
-
         // Find client by email or mobile
-        const client = clientsData.find((c: any) =>
-            c.email === contactInfo || c.mobile === contactInfo
-        );
+        const client = findClientByContact(contactInfo);
 
         if (!client) {
             // Return success even if not found to prevent enumeration attacks

@@ -29,7 +29,7 @@ export function MarqueeBanner() {
       >
         <Image
           src={HOME_BANNERS[currentIndex]}
-          alt={`Banner ${currentIndex + 1}`}
+          alt=""
           fill
           className="object-cover"
           priority={currentIndex === 0}

@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AlertTriangle, FileText, Download, ShieldAlert, TrendingDown, Users } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Disclosure & Disclaimer",
+  description: "Investment risk disclosures and regulatory disclaimers as mandated by SEBI for Sunidhi Securities & Finance Limited.",
+};
 
 export default function DisclosureDisclaimerPage() {
   return (
@@ -27,7 +33,7 @@ export default function DisclosureDisclaimerPage() {
                   <div className="flex items-center gap-4">
                     <FileText className="h-10 w-10 text-primary-600" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">Complete Disclaimer Document</h3>
+                      <h2 className="font-semibold text-gray-900 text-lg">Complete Disclaimer Document</h2>
                       <p className="text-sm text-gray-600">Download the full disclaimer and disclosure PDF</p>
                     </div>
                   </div>
@@ -35,9 +41,10 @@ export default function DisclosureDisclaimerPage() {
                     href="/legal-documents/SUNIDHI_DISCLAIMER_WEBSITE_Final_Aug_11_2023.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="View Complete Disclaimer Document PDF (opens in a new tab)"
                     className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
                   >
-                    <Download className="h-5 w-5" />
+                    <Download className="h-5 w-5" aria-hidden="true" />
                     View PDF
                   </a>
                 </div>
@@ -47,10 +54,10 @@ export default function DisclosureDisclaimerPage() {
             {/* Research Analyst Disclosure */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <FileText className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Research Analyst Disclosure
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -76,10 +83,10 @@ export default function DisclosureDisclaimerPage() {
             {/* Conflict of Interest Statements */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <ShieldAlert className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <ShieldAlert className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Conflict of Interest Statements
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 <ul className="space-y-2 text-gray-700 list-disc list-inside">
@@ -95,7 +102,7 @@ export default function DisclosureDisclaimerPage() {
             {/* Report Limitations */}
             <Card>
               <CardHeader>
-                <CardTitle>Report Limitations</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight">Report Limitations</h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 <ul className="space-y-2 text-gray-700 list-disc list-inside">
@@ -112,7 +119,7 @@ export default function DisclosureDisclaimerPage() {
             {/* Information Sourcing */}
             <Card>
               <CardHeader>
-                <CardTitle>Information Sourcing</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight">Information Sourcing</h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 <ul className="space-y-2 text-gray-700 list-disc list-inside">
@@ -127,10 +134,10 @@ export default function DisclosureDisclaimerPage() {
             {/* Risk Disclosures on Derivatives */}
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-red-900">
-                  <TrendingDown className="h-6 w-6 text-red-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3 text-red-900">
+                  <TrendingDown className="h-6 w-6 text-red-600" aria-hidden="true" />
                   Risk Disclosures on Derivatives
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-white p-4 rounded-lg border border-red-200">
@@ -151,10 +158,10 @@ export default function DisclosureDisclaimerPage() {
             {/* Investor Protection Notices */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Users className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <Users className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Investor Protection Notices
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>

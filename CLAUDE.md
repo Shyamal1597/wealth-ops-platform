@@ -3,6 +3,7 @@
 ## Read These First
 - **`CMOTS_README.md`** — Full tech stack, architecture, data flow diagrams, environment variables, deployment instructions, and all implemented features. Start here to understand the codebase.
 - **`CHANGELOG.md`** — Full history of every change. The top entry (`[1.0.6]`) contains a `⚠️ PENDING — Continue From Here` block describing exactly what still needs to be done and which files to edit.
+- **`ACCESSIBILITY_GUIDELINES.md`** — **Mandatory reading before building or editing any page, component, or dashboard.** This is a SEBI regulatory compliance requirement (WCAG 2.2 Level AA), not optional polish. Contains the specific recurring bug patterns found in a full external audit and the exact fix pattern for each — read it before writing JSX, not after.
 
 ---
 
@@ -61,6 +62,9 @@ The `@/` import alias requires both `"baseUrl": "."` and `"paths": { "@/*": ["./
 All auth cookies use `secure: process.env.COOKIE_SECURE !== "false"`.  
 For local HTTP development, set `COOKIE_SECURE=false` in `.env.local`.  
 In production (HTTPS), omit the variable entirely.
+
+### 6. Accessibility Is a Regulatory Requirement, Not Optional
+This site must meet **WCAG 2.2 Level AA** — mandated by SEBI's digital accessibility circulars (confirmed against the actual circular text; SEBI requires "WCAG 2.1 or the latest version" at AA level, and 2.2 is the current W3C Recommendation). **Read `ACCESSIBILITY_GUIDELINES.md` before building any new page or component.** It documents the exact recurring bugs a full external audit found (heading hierarchy via `CardTitle`'s hardcoded `<h3>`, insufficient color contrast on brand-color buttons, missing focus indicators, unlabeled icon-only controls, generic "Download"/"View" links repeated across a list, missing page titles on client components, keyboard focus order broken by responsive nav wrapping, etc.) and the established fix pattern for each. Most of these are one-line fixes if caught before shipping — they became a ~100-finding remediation project because they weren't.
 
 ---
 

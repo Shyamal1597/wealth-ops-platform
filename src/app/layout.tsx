@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
+import RouteFocusManager from "@/components/RouteFocusManager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,6 +51,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AnalyticsTracker />
+        <RouteFocusManager />
         <Header />
         <main id="main-content">{children}</main>
         <Footer />

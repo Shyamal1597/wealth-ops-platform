@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FileText, AlertCircle, Shield, ExternalLink, Mail } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Regulatory Information",
+  description: "SEBI registration numbers, exchange memberships, and regulatory details for Sunidhi Securities & Finance Limited.",
+};
 
 export default function RegulatoryInformationPage() {
   return (
@@ -23,10 +29,10 @@ export default function RegulatoryInformationPage() {
             {/* SEBI Registration Details */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Shield className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <Shield className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   SEBI Registration Details
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -53,10 +59,10 @@ export default function RegulatoryInformationPage() {
             {/* Client Registration & KYC */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <FileText className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Client Registration & KYC
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -77,7 +83,7 @@ export default function RegulatoryInformationPage() {
             {/* Additional Documentation for Derivatives Trading */}
             <Card>
               <CardHeader>
-                <CardTitle>Additional Documentation for Derivatives Trading</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight">Additional Documentation for Derivatives Trading</h2>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 mb-4">Required supporting documents include:</p>
@@ -97,10 +103,10 @@ export default function RegulatoryInformationPage() {
             {/* Regulatory Compliance Notices */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <AlertCircle className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Regulatory Compliance Notices
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
@@ -118,10 +124,10 @@ export default function RegulatoryInformationPage() {
             {/* Grievance Redressal */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Mail className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <Mail className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Grievance Redressal
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -148,7 +154,7 @@ export default function RegulatoryInformationPage() {
             {/* Risk Disclosure */}
             <Card className="border-red-200 bg-red-50">
               <CardHeader>
-                <CardTitle className="text-red-900">Risk Disclosure - Derivatives Trading</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight text-red-900">Risk Disclosure - Derivatives Trading</h2>
               </CardHeader>
               <CardContent>
                 <div className="bg-white p-4 rounded-lg border border-red-200">

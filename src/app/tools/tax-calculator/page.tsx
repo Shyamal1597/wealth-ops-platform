@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Tax Calculator",
+  description: "Calculate short-term and long-term capital gains tax on your stock market investments.",
+};
 
 export default function TaxCalculatorPage() {
   return (

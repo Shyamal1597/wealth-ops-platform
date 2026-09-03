@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CheckCircle, Clock, Shield } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Open Trading Account",
+  description: "Open a trading and demat account with Sunidhi Securities — eKYC, offline, and NRI account options available.",
+};
 
 export default function OpenAccountPage() {
   return (

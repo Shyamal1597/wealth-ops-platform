@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Twitter, Linkedin, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Linkedin, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { COMPANY_INFO } from "@/lib/constants";
 
@@ -19,21 +19,18 @@ export default function Footer() {
             <p className="text-sm mb-4">
               Where financial goals take wings to make a difference. Serving clients with excellence for over 58 years.
             </p>
-            <div className="flex gap-3">
-              <a href="#" className="hover:text-white transition-colors">
-                <Facebook className="h-5 w-5" />
+            <div className="flex gap-1">
+              <a href="https://www.facebook.com/profile.php?id=61582925495111" target="_blank" rel="noopener noreferrer" className="p-2 -m-1 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded" aria-label="Follow us on Facebook (opens in a new tab)">
+                <Facebook className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="#" className="hover:text-white transition-colors">
-                <Twitter className="h-5 w-5" />
+              <a href="https://www.linkedin.com/company/sunidhisecurities&financelimited/" target="_blank" rel="noopener noreferrer" className="p-2 -m-1 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded" aria-label="Follow us on LinkedIn (opens in a new tab)">
+                <Linkedin className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="#" className="hover:text-white transition-colors">
-                <Linkedin className="h-5 w-5" />
+              <a href="https://www.instagram.com/sunidhisecurities/" target="_blank" rel="noopener noreferrer" className="p-2 -m-1 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded" aria-label="Follow us on Instagram (opens in a new tab)">
+                <Instagram className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="#" className="hover:text-white transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                <Youtube className="h-5 w-5" />
+              <a href="https://www.youtube.com/@sunidhisecuritiesfinancelt002" target="_blank" rel="noopener noreferrer" className="p-2 -m-1 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded" aria-label="Subscribe to our YouTube channel (opens in a new tab)">
+                <Youtube className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -54,20 +51,29 @@ export default function Footer() {
           {/* Contact Info */}
           <div>
             <h4 className="text-white font-semibold mb-4">Contact Us</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex gap-2">
-                <MapPin className="h-5 w-5 flex-shrink-0" />
-                <span>{COMPANY_INFO.address.full}</span>
-              </li>
-              <li className="flex gap-2">
-                <Phone className="h-5 w-5 flex-shrink-0" />
-                <span>{COMPANY_INFO.phoneDisplay}</span>
-              </li>
-              <li className="flex gap-2">
-                <Mail className="h-5 w-5 flex-shrink-0" />
-                <Link href="/support/contact" className="hover:text-white">Contact Us</Link>
-              </li>
-            </ul>
+            <dl className="space-y-3 text-sm">
+              <div className="flex gap-2">
+                <MapPin className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <div>
+                  <dt className="sr-only">Address</dt>
+                  <dd>{COMPANY_INFO.address.full}</dd>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Phone className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <div>
+                  <dt className="sr-only">Phone</dt>
+                  <dd>{COMPANY_INFO.phoneDisplay}</dd>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Mail className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <div>
+                  <dt className="sr-only">Email</dt>
+                  <dd><Link href="/support/contact" className="hover:text-white">Contact Us</Link></dd>
+                </div>
+              </div>
+            </dl>
           </div>
         </div>
       </Container>
@@ -112,8 +118,8 @@ export default function Footer() {
               <Link href="/legal/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/legal/disclosure-disclaimer" className="hover:text-white transition-colors">Disclosure & Disclaimer</Link>
               <Link href="/legal/regulatory-information" className="hover:text-white transition-colors">Regulatory Info</Link>
-              <Link href="/admin/login" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Admin</Link>
-              <span className="text-xs text-gray-500">Designed and Developed by <strong>AI Operations Department - Sunidhi Securities & Finance Ltd.</strong></span>
+              <Link href="/admin/login" className="text-xs text-gray-400 hover:text-gray-300 transition-colors">Admin</Link>
+              <span className="text-xs text-gray-400">Designed and Developed by <strong>AI Operations Department - Sunidhi Securities & Finance Ltd.</strong></span>
             </div>
           </div>
         </Container>

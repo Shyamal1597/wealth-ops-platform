@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 
 export const metadata = {
-  title: "Become a Sub Broker | Sunidhi Securities & Finance Limited",
+  title: "Become a Sub Broker",
   description:
     "Partner with Sunidhi Securities and build your own financial business. Earn up to 70% revenue share, get full business support, and grow with one of India's trusted broking houses.",
 };

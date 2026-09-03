@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpCircle, ChevronRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Help Center",
+  description: "Frequently asked questions and support resources covering account opening, trading, and technical support.",
+};
 
 export default function HelpPage() {
   return (

@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync, writeFileSync } from 'fs';
 import bcrypt from 'bcryptjs';
 import { sendSmsOTP } from '@/lib/sms';
-import { join } from 'path';
-
-interface ClientData {
-    clientId: string;
-    name: string;
-    email?: string;
-    mobile?: string;
-    password?: string;
-    accountStatus?: string;
-    accountOpenDate?: string;
-    requiresActivation?: boolean;
-}
+import { findClientById, updateClient, setOtp, getOtp, deleteOtp } from '@/lib/client-db';
+import { generateOtp } from '@/lib/client-otp';
 
 /**
  * GET /api/auth/client-profile?clientId=XXX
@@ -27,14 +16,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Client ID is required' }, { status: 400 });
         }
 
-        const clientsFilePath = join(process.cwd(), 'data', 'clients.json');
-
-        if (!existsSync(clientsFilePath)) {
-            return NextResponse.json({ error: 'Client data not found' }, { status: 404 });
-        }
-
-        const clientsData: ClientData[] = JSON.parse(readFileSync(clientsFilePath, 'utf8'));
-        const client = clientsData.find((c) => c.clientId === clientId);
+        const client = findClientById(clientId);
 
         if (!client) {
             return NextResponse.json({ error: 'Client not found' }, { status: 404 });
@@ -67,20 +49,16 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Client ID is required' }, { status: 400 });
         }
 
-        const clientsFilePath = join(process.cwd(), 'data', 'clients.json');
+        const client = findClientById(clientId);
 
-        if (!existsSync(clientsFilePath)) {
-            return NextResponse.json({ error: 'Client data not found' }, { status: 404 });
-        }
-
-        const clientsData: ClientData[] = JSON.parse(readFileSync(clientsFilePath, 'utf8'));
-        const clientIndex = clientsData.findIndex((c) => c.clientId === clientId);
-
-        if (clientIndex === -1) {
+        if (!client) {
             return NextResponse.json({ error: 'Client not found' }, { status: 404 });
         }
 
-        const client = clientsData[clientIndex];
+        // Accumulated as the various update paths below run; written via a single
+        // updateClient() call (or one per early-return point), instead of mutating
+        // an in-memory array element the way the old JSON-file version did.
+        const pendingUpdates: Record<string, unknown> = {};
         let updated = false;
 
         const mobileChanged = mobile !== undefined && mobile !== client.mobile;
@@ -92,7 +70,7 @@ export async function PUT(request: NextRequest) {
         }
 
         if (nameChanged) {
-            clientsData[clientIndex].name = name.trim();
+            pendingUpdates.name = name.trim();
             updated = true;
         }
 
@@ -100,48 +78,30 @@ export async function PUT(request: NextRequest) {
         if (mobileChanged) {
             if (!otp) {
                 // Generate and send OTP to new mobile
-                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                const generatedOtp = generateOtp();
                 const smsResult = await sendSmsOTP(mobile, generatedOtp);
 
                 if (!smsResult.success) {
                     return NextResponse.json({ error: 'Failed to send OTP to the new mobile number' }, { status: 500 });
                 }
 
-                const otpsFilePath = join(process.cwd(), 'data', 'client-otps.json');
-                let otpsData: Record<string, any> = {};
-                if (existsSync(otpsFilePath)) {
-                    try { otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8')); } catch (e) { }
-                }
-
-                otpsData[`${clientId}_profile_update`] = {
-                    otp: generatedOtp,
-                    expiresAt: Date.now() + 10 * 60 * 1000,
-                    pendingMobile: mobile,
-                };
-
-                writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
+                setOtp(`${clientId}_profile_update`, generatedOtp, Date.now() + 10 * 60 * 1000, { pendingMobile: mobile });
                 if (updated) {
-                    writeFileSync(clientsFilePath, JSON.stringify(clientsData, null, 2));
+                    updateClient(clientId, pendingUpdates);
                 }
                 return NextResponse.json({ requiresOtpVerification: true, message: 'OTP sent to new mobile number' });
             } else {
                 // Verify OTP
-                const otpsFilePath = join(process.cwd(), 'data', 'client-otps.json');
-                let otpsData: Record<string, any> = {};
-                if (existsSync(otpsFilePath)) {
-                    try { otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8')); } catch (e) { }
-                }
-
-                const record = otpsData[`${clientId}_profile_update`];
-                if (!record || record.otp !== otp || Date.now() > record.expiresAt || record.pendingMobile !== mobile) {
+                const record = getOtp(`${clientId}_profile_update`);
+                const pendingMobile = record?.extra?.pendingMobile;
+                if (!record || record.otp !== otp || Date.now() > record.expiresAt || pendingMobile !== mobile) {
                     return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 });
                 }
 
-                clientsData[clientIndex].mobile = record.pendingMobile;
+                pendingUpdates.mobile = pendingMobile;
                 updated = true;
 
-                delete otpsData[`${clientId}_profile_update`];
-                writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
+                deleteOtp(`${clientId}_profile_update`);
             }
         }
 
@@ -149,7 +109,7 @@ export async function PUT(request: NextRequest) {
         if (emailChanged) {
             if (!otp) {
                 // Generate and send OTP to new email
-                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                const generatedOtp = generateOtp();
 
                 // Import sendEmail directly to reuse email template
                 const { sendEmail } = await import('@/lib/email');
@@ -177,41 +137,23 @@ export async function PUT(request: NextRequest) {
                     return NextResponse.json({ error: 'Failed to send verification email. Please check your SMTP configuration.' }, { status: 500 });
                 }
 
-                const otpsFilePath = join(process.cwd(), 'data', 'client-otps.json');
-                let otpsData: Record<string, any> = {};
-                if (existsSync(otpsFilePath)) {
-                    try { otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8')); } catch (e) { }
-                }
-
-                otpsData[`${clientId}_profile_update`] = {
-                    otp: generatedOtp,
-                    expiresAt: Date.now() + 10 * 60 * 1000,
-                    pendingEmail: email,
-                };
-
-                writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
+                setOtp(`${clientId}_profile_update`, generatedOtp, Date.now() + 10 * 60 * 1000, { pendingEmail: email });
                 if (updated) {
-                    writeFileSync(clientsFilePath, JSON.stringify(clientsData, null, 2));
+                    updateClient(clientId, pendingUpdates);
                 }
                 return NextResponse.json({ requiresOtpVerification: true, message: 'Verification code sent to new email' });
             } else {
                 // Verify OTP
-                const otpsFilePath = join(process.cwd(), 'data', 'client-otps.json');
-                let otpsData: Record<string, any> = {};
-                if (existsSync(otpsFilePath)) {
-                    try { otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8')); } catch (e) { }
-                }
-
-                const record = otpsData[`${clientId}_profile_update`];
-                if (!record || record.otp !== otp || Date.now() > record.expiresAt || record.pendingEmail !== email) {
+                const record = getOtp(`${clientId}_profile_update`);
+                const pendingEmail = record?.extra?.pendingEmail;
+                if (!record || record.otp !== otp || Date.now() > record.expiresAt || pendingEmail !== email) {
                     return NextResponse.json({ error: 'Invalid or expired verification code' }, { status: 400 });
                 }
 
-                clientsData[clientIndex].email = record.pendingEmail;
+                pendingUpdates.email = pendingEmail;
                 updated = true;
 
-                delete otpsData[`${clientId}_profile_update`];
-                writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
+                deleteOtp(`${clientId}_profile_update`);
             }
         }
 
@@ -244,7 +186,7 @@ export async function PUT(request: NextRequest) {
             }
 
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            clientsData[clientIndex].password = hashedPassword;
+            pendingUpdates.password = hashedPassword;
             updated = true;
         }
 
@@ -252,14 +194,14 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ message: 'No changes detected' });
         }
 
-        writeFileSync(clientsFilePath, JSON.stringify(clientsData, null, 2));
+        const savedClient = updateClient(clientId, pendingUpdates)!;
 
         return NextResponse.json({
             message: 'Profile updated successfully',
-            clientId: client.clientId,
-            name: client.name,
-            email: clientsData[clientIndex].email || '',
-            mobile: clientsData[clientIndex].mobile || '',
+            clientId: savedClient.clientId,
+            name: savedClient.name,
+            email: savedClient.email || '',
+            mobile: savedClient.mobile || '',
         });
     } catch (error) {
         console.error('Client profile update error:', error);

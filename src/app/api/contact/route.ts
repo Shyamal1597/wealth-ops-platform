@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, subject, message } = body;
+    const { name, email, phone, subject, message, queryType } = body;
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -13,6 +13,13 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Route the message to the right inbox based on the query type the
+    // user selected. Franchise/AP queries go to the associate desk;
+    // everything else keeps going to the online trading desk (unchanged
+    // default behaviour for any request that omits queryType).
+    const recipientEmail =
+      queryType === "franchise_ap" ? "associate@sunidhi.com" : "onlinetrading@sunidhi.com";
 
     // Basic email validation
     if (!email.includes("@")) {
@@ -47,10 +54,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send the contact message to onlinetrading@sunidhi.com
+    // Send the contact message to the resolved recipient inbox
     await transporter.sendMail({
       from: `"Sunidhi Securities" <${process.env.SMTP_USER}>`,
-      to: "onlinetrading@sunidhi.com",
+      to: recipientEmail,
       subject: `Website Contact: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -67,6 +74,7 @@ export async function POST(request: NextRequest) {
 
           <div style="background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Message Details</h3>
+            <p><strong>Query Type:</strong> ${queryType === "franchise_ap" ? "Franchise / AP Queries" : "Other Queries"}</p>
             <p><strong>Subject:</strong> ${subject}</p>
             <p><strong>Submitted:</strong> ${submittedAt}</p>
           </div>
@@ -83,7 +91,7 @@ export async function POST(request: NextRequest) {
       `,
     });
 
-    console.log(`✅ Contact form email sent to onlinetrading@sunidhi.com from ${name} (${email})`);
+    console.log(`✅ Contact form email sent to ${recipientEmail} from ${name} (${email})`);
 
     // Send auto-reply to the user
     await transporter.sendMail({
@@ -99,7 +107,7 @@ export async function POST(request: NextRequest) {
             <p>Dear ${name},</p>
             <p>Thank you for reaching out to us. We have successfully received your message regarding <strong>${subject}</strong>.</p>
             <p>Our team will review your inquiry and get back to you as soon as possible.</p>
-            <p>For urgent matters, please contact us directly at <a href="mailto:onlinetrading@sunidhi.com" style="color: #DC0000;">onlinetrading@sunidhi.com</a> or call us at 022-66771601.</p>
+            <p>For urgent matters, please contact us directly at <a href="mailto:${recipientEmail}" style="color: #DC0000;">${recipientEmail}</a> or call us at 022-66771601.</p>
             <br />
             <p>Best regards,</p>
             <p><strong>Sunidhi Securities Team</strong></p>

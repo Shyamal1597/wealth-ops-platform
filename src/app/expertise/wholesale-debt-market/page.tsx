@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, TrendingUp, Shield, CheckCircle2, BarChart3, Award } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Wholesale Debt Market",
+  description: "WDM trading, economic research, and access to government securities and money market instruments.",
+};
 
 export default function WholesaleDebtMarketPage() {
   return (

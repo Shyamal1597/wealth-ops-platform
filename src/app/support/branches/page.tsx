@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Branch Locator",
+  description: "Find your nearest Sunidhi Securities branch office across India.",
+};
 
 export default function BranchesPage() {
   return (

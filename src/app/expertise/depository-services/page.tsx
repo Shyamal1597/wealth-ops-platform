@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Archive, Shield, CheckCircle2, TrendingUp, FileText, Users } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Depository Services",
+  description: "CDSL-registered depository participant services for secure dematerialisation, holding, and transfer of securities.",
+};
 
 export default function DepositoryServicesPage() {
   return (

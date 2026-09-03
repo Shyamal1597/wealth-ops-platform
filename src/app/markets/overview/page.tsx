@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Market Overview",
+  description: "A snapshot of key market indices and trends to help guide your investment decisions.",
+};
 
 export default function MarketOverviewPage() {
   return (

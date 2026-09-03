@@ -113,3 +113,12 @@ sunidhi-export-for-seo/scripts/init-super-admin.js
 *.ps1
 web.config
 IIS-web.config
+
+# Real client PII (names/emails/mobiles) — this repo is public on GitHub, never commit
+scripts/active-holdings-clients.json
+**/active-holdings-clients.json
+
+# Vendor deployment handoff material (internal instructions, packaged code snapshots,
+# and can carry client-data exports) — operational, not versioned source
+/accessibility-fixes-for-cmots/
+accessibility-fixes-for-cmots.zip

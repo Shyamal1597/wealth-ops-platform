@@ -26,6 +26,8 @@ import {
   Award,
   Users,
   ImageIcon,
+  Images,
+  ImagePlus,
   Clock,
   Heart,
   Building,
@@ -34,6 +36,7 @@ import {
 } from "lucide-react";
 import { ResearchReport, RESEARCH_STRUCTURE } from "@/lib/research-types";
 import SIPProductsAdminPanel from "@/components/admin/SIPProductsAdminPanel";
+import ClientsAdminPanel from "@/components/admin/ClientsAdminPanel";
 
 interface AdminData {
   id: string;
@@ -130,6 +133,8 @@ interface Blog {
   author: string;
   category: string;
   image: string;
+  images?: string[];
+  postType?: "standard" | "carousel";
   publishedAt: string;
   featured: boolean;
   tags: string[];
@@ -148,7 +153,7 @@ export default function AdminDashboardPage() {
   const [foundationData, setFoundationData] = useState<FoundationData | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"feedbacks" | "reports" | "content" | "careers" | "awards" | "leadership" | "life" | "timeline" | "csr" | "foundation" | "blogs" | "sip" | "daily_updates">("feedbacks");
+  const [activeTab, setActiveTab] = useState<"feedbacks" | "reports" | "content" | "careers" | "awards" | "leadership" | "life" | "timeline" | "csr" | "foundation" | "blogs" | "sip" | "clients" | "daily_updates">("feedbacks");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
@@ -162,7 +167,6 @@ export default function AdminDashboardPage() {
   const [showTimelineModal, setShowTimelineModal] = useState(false);
   const [showTimelineEditModal, setShowTimelineEditModal] = useState(false);
   const [showBlogModal, setShowBlogModal] = useState(false);
-  const [showBlogEditModal, setShowBlogEditModal] = useState(false);
   const [editingReport, setEditingReport] = useState<ResearchReport | null>(null);
   const [editingJob, setEditingJob] = useState<JobPosting | null>(null);
   const [editingAward, setEditingAward] = useState<Award | null>(null);
@@ -235,11 +239,18 @@ export default function AdminDashboardPage() {
     author: "Sunidhi Research Team",
     category: "",
     image: "",
+    images: [] as string[],
+    postType: "standard" as "standard" | "carousel",
     featured: false,
     tags: [] as string[],
   });
   const [blogImageUploading, setBlogImageUploading] = useState(false);
+  const [blogCarouselUploading, setBlogCarouselUploading] = useState(false);
+  const [blogInlineImageUploading, setBlogInlineImageUploading] = useState(false);
   const blogImageInputRef = useRef<HTMLInputElement>(null);
+  const blogCarouselInputRef = useRef<HTMLInputElement>(null);
+  const blogInlineImageInputRef = useRef<HTMLInputElement>(null);
+  const blogContentRef = useRef<HTMLTextAreaElement>(null);
 
   // Daily Updates state
   const [dailyUpdates, setDailyUpdates] = useState<Array<{
@@ -272,6 +283,7 @@ export default function AdminDashboardPage() {
     blogs: "manage_blogs",
     content: "upload_content",
     sip: "manage_sip_products",
+    clients: "manage_clients",
     daily_updates: "manage_daily_updates",
   };
 
@@ -1396,10 +1408,115 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // ── Carousel image upload (multiple files, appended in order) ──────────────
+  const handleCarouselImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setBlogCarouselUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const data = new FormData();
+        data.append("file", file);
+
+        const res = await fetch("/api/admin/blogs/upload-image", {
+          method: "POST",
+          body: data,
+        });
+
+        const json = await res.json();
+        if (!res.ok) {
+          alert(json.error || `Failed to upload ${file.name}`);
+          continue;
+        }
+
+        setBlogForm((prev) => ({ ...prev, images: [...prev.images, json.path] }));
+      }
+    } catch {
+      alert("Image upload failed. Please try again.");
+    } finally {
+      setBlogCarouselUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveCarouselImage = (index: number) => {
+    setBlogForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+  };
+
+  // ── Insert an image inline into the Content body (Medium-style) ────────────
+  const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBlogInlineImageUploading(true);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+
+      const res = await fetch("/api/admin/blogs/upload-image", {
+        method: "POST",
+        body: data,
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        alert(json.error || "Image upload failed");
+        return;
+      }
+
+      const imgTag = `\n<img src="${json.path}" alt="" style="max-width:100%;border-radius:8px;" />\n`;
+      const textarea = blogContentRef.current;
+      const start = textarea?.selectionStart ?? blogForm.content.length;
+      const end = textarea?.selectionEnd ?? blogForm.content.length;
+      const newContent = blogForm.content.slice(0, start) + imgTag + blogForm.content.slice(end);
+
+      setBlogForm((prev) => ({ ...prev, content: newContent }));
+
+      // Restore focus and cursor position just after the inserted tag
+      requestAnimationFrame(() => {
+        if (!textarea) return;
+        textarea.focus();
+        const pos = start + imgTag.length;
+        textarea.setSelectionRange(pos, pos);
+      });
+    } catch {
+      alert("Image upload failed. Please try again.");
+    } finally {
+      setBlogInlineImageUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  // Shared validation across create/update: image is always optional. A
+  // carousel post needs at least one image instead of body content; a
+  // standard post needs body content instead.
+  const validateBlogForm = (): string | null => {
+    if (!blogForm.title || !blogForm.excerpt || !blogForm.category) {
+      return "Please fill in all required fields";
+    }
+    if (blogForm.postType === "carousel") {
+      if (blogForm.images.length === 0) {
+        return "Add at least one image for a carousel post";
+      }
+    } else if (!blogForm.content) {
+      return "Please add content for the blog post";
+    }
+    return null;
+  };
+
+  // The card/list views only know about a single `image` thumbnail — for a
+  // carousel post, keep it in sync with the first carousel image.
+  const buildBlogPayload = () => ({
+    ...blogForm,
+    image: blogForm.postType === "carousel" ? (blogForm.images[0] || "") : blogForm.image,
+  });
+
   const handleCreateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!blogForm.title || !blogForm.excerpt || !blogForm.content || !blogForm.category) {
-      alert("Please fill in all required fields");
+    const validationError = validateBlogForm();
+    if (validationError) {
+      alert(validationError);
       return;
     }
 
@@ -1410,7 +1527,7 @@ export default function AdminDashboardPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(blogForm),
+        body: JSON.stringify(buildBlogPayload()),
       });
 
       if (response.ok) {
@@ -1423,6 +1540,8 @@ export default function AdminDashboardPage() {
           author: "Sunidhi Research Team",
           category: "",
           image: "",
+          images: [],
+          postType: "standard",
           featured: false,
           tags: [],
         });
@@ -1442,6 +1561,11 @@ export default function AdminDashboardPage() {
   const handleUpdateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBlog) return;
+    const validationError = validateBlogForm();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
     setUploading(true);
     try {
@@ -1452,13 +1576,13 @@ export default function AdminDashboardPage() {
         },
         body: JSON.stringify({
           ...editingBlog,
-          ...blogForm,
+          ...buildBlogPayload(),
         }),
       });
 
       if (response.ok) {
         alert("Blog updated successfully!");
-        setShowBlogEditModal(false);
+        setShowBlogModal(false);
         setEditingBlog(null);
         loadBlogs();
       } else {
@@ -1503,10 +1627,12 @@ export default function AdminDashboardPage() {
       author: blog.author,
       category: blog.category,
       image: blog.image,
+      images: blog.images || [],
+      postType: blog.postType || "standard",
       featured: blog.featured,
       tags: blog.tags,
     });
-    setShowBlogEditModal(true);
+    setShowBlogModal(true);
   };
 
   const handleLifeImageEditClick = (image: LifeImage) => {
@@ -1733,6 +1859,19 @@ export default function AdminDashboardPage() {
               >
                 <BarChart3 className="inline h-5 w-5 mr-2" />
                 SIP Products
+              </button>
+            )}
+            {canAccessTab("clients") && (
+              <button
+                onClick={() => setActiveTab("clients")}
+                className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                  activeTab === "clients"
+                    ? "border-primary-600 text-primary-600"
+                    : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <Users className="inline h-5 w-5 mr-2" />
+                Clients
               </button>
             )}
             {canAccessTab("daily_updates") && (
@@ -2807,7 +2946,9 @@ export default function AdminDashboardPage() {
                     content: "",
                     author: "Sunidhi Research Team",
                     category: "Investment Basics",
-                    image: "/images/blog/default.jpg",
+                    image: "",
+                    images: [],
+                    postType: "standard",
                     featured: false,
                     tags: [],
                   });
@@ -2831,7 +2972,9 @@ export default function AdminDashboardPage() {
                       content: "",
                       author: "Sunidhi Research Team",
                       category: "Investment Basics",
-                      image: "/images/blog/default.jpg",
+                      image: "",
+                      images: [],
+                      postType: "standard",
                       featured: false,
                       tags: [],
                     });
@@ -2923,6 +3066,11 @@ export default function AdminDashboardPage() {
           {/* SIP Products Tab */}
           {canAccessTab("sip") && activeTab === "sip" && (
             <SIPProductsAdminPanel />
+          )}
+
+          {/* Clients Tab */}
+          {canAccessTab("clients") && activeTab === "clients" && (
+            <ClientsAdminPanel />
           )}
 
           {/* Daily Updates Tab */}
@@ -4650,6 +4798,41 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium mb-2">Post Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setBlogForm({ ...blogForm, postType: "standard" })}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-md border text-sm font-medium transition-colors ${
+                        blogForm.postType === "standard"
+                          ? "border-primary-600 bg-primary-50 text-primary-700"
+                          : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                      Standard Blog
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBlogForm({ ...blogForm, postType: "carousel" })}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-md border text-sm font-medium transition-colors ${
+                        blogForm.postType === "carousel"
+                          ? "border-primary-600 bg-primary-50 text-primary-700"
+                          : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      <Images className="h-4 w-4" />
+                      Image Carousel
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    {blogForm.postType === "carousel"
+                      ? "A gallery of images with an optional caption — no featured image or body text needed."
+                      : "A regular article. Featured image is optional; body content is required."}
+                  </p>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium mb-2">
                     Excerpt <span className="text-red-600">*</span>
                   </label>
@@ -4664,77 +4847,196 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Content <span className="text-red-600">*</span>
-                  </label>
-                  <textarea
-                    required
-                    value={blogForm.content}
-                    onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-                    rows={12}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="Full blog post content..."
-                  />
-                </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium">
+                      {blogForm.postType === "carousel" ? (
+                        "Caption (optional)"
+                      ) : (
+                        <>Content <span className="text-red-600">*</span></>
+                      )}
+                    </label>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Featured Image <span className="text-red-600">*</span>
-                  </label>
-
-                  {/* Preview */}
-                  {blogForm.image && (
-                    <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 h-40 flex items-center justify-center">
-                      <img
-                        src={blogForm.image}
-                        alt="Blog featured image preview"
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Hidden file input */}
-                  <input
-                    ref={blogImageInputRef}
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleBlogImageUpload}
-                  />
-
-                  {/* Visible upload button */}
-                  <div className="flex items-center gap-3">
+                    {/* Hidden file input for inline (Medium-style) image insertion */}
+                    <input
+                      ref={blogInlineImageInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleInlineImageUpload}
+                    />
                     <button
                       type="button"
-                      onClick={() => blogImageInputRef.current?.click()}
-                      disabled={blogImageUploading}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-60 transition-colors"
+                      onClick={() => blogInlineImageInputRef.current?.click()}
+                      disabled={blogInlineImageUploading}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-60 transition-colors"
                     >
-                      {blogImageUploading ? (
+                      {blogInlineImageUploading ? (
                         <>
-                          <span className="h-4 w-4 border-2 border-gray-400 border-t-primary-600 rounded-full animate-spin" />
+                          <span className="h-3.5 w-3.5 border-2 border-gray-400 border-t-primary-600 rounded-full animate-spin" />
                           Uploading…
                         </>
                       ) : (
                         <>
-                          <ImageIcon className="h-4 w-4" />
-                          {blogForm.image ? "Change Image" : "Choose Image"}
+                          <ImagePlus className="h-3.5 w-3.5" />
+                          Insert Image
                         </>
                       )}
                     </button>
-                    {blogForm.image && (
-                      <span className="text-xs text-green-600 font-medium">
-                        ✓ Image ready
-                      </span>
-                    )}
                   </div>
+                  <textarea
+                    ref={blogContentRef}
+                    required={blogForm.postType !== "carousel"}
+                    value={blogForm.content}
+                    onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                    rows={12}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder={
+                      blogForm.postType === "carousel"
+                        ? "Optional caption or description for the carousel..."
+                        : "Full blog post content..."
+                    }
+                  />
                   <p className="text-xs text-gray-400 mt-1.5">
-                    JPG, PNG or WEBP · Max 5 MB
+                    Click "Insert Image" to drop a picture into the text at your cursor position, Medium-style.
                   </p>
                 </div>
+
+                {blogForm.postType === "carousel" ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Carousel Images <span className="text-red-600">*</span>
+                    </label>
+
+                    {blogForm.images.length > 0 && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+                        {blogForm.images.map((img, index) => (
+                          <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50 h-24 group">
+                            <img
+                              src={img}
+                              alt={`Carousel image ${index + 1}`}
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCarouselImage(index)}
+                              className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <input
+                      ref={blogCarouselInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      multiple
+                      className="hidden"
+                      onChange={handleCarouselImageUpload}
+                    />
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => blogCarouselInputRef.current?.click()}
+                        disabled={blogCarouselUploading}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-60 transition-colors"
+                      >
+                        {blogCarouselUploading ? (
+                          <>
+                            <span className="h-4 w-4 border-2 border-gray-400 border-t-primary-600 rounded-full animate-spin" />
+                            Uploading…
+                          </>
+                        ) : (
+                          <>
+                            <Images className="h-4 w-4" />
+                            Add Images
+                          </>
+                        )}
+                      </button>
+                      {blogForm.images.length > 0 && (
+                        <span className="text-xs text-green-600 font-medium">
+                          ✓ {blogForm.images.length} image{blogForm.images.length !== 1 ? "s" : ""} ready
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      JPG, PNG or WEBP · Max 5 MB each · Select multiple files at once or add more later
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Featured Image <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
+
+                    {/* Preview */}
+                    {blogForm.image && (
+                      <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 h-40 flex items-center justify-center">
+                        <img
+                          src={blogForm.image}
+                          alt="Blog featured image preview"
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Hidden file input */}
+                    <input
+                      ref={blogImageInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleBlogImageUpload}
+                    />
+
+                    {/* Visible upload button */}
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => blogImageInputRef.current?.click()}
+                        disabled={blogImageUploading}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-60 transition-colors"
+                      >
+                        {blogImageUploading ? (
+                          <>
+                            <span className="h-4 w-4 border-2 border-gray-400 border-t-primary-600 rounded-full animate-spin" />
+                            Uploading…
+                          </>
+                        ) : (
+                          <>
+                            <ImageIcon className="h-4 w-4" />
+                            {blogForm.image ? "Change Image" : "Choose Image"}
+                          </>
+                        )}
+                      </button>
+                      {blogForm.image && (
+                        <>
+                          <span className="text-xs text-green-600 font-medium">
+                            ✓ Image ready
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setBlogForm({ ...blogForm, image: "" })}
+                            className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+                          >
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      JPG, PNG or WEBP · Max 5 MB · Leave blank to publish without a featured image
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium mb-2">

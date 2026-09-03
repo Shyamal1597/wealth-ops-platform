@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Shield, Building2, CheckCircle2, Users, BarChart3 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Institution Equity (Corporate)",
+  description: "Institutional equity services for FIIs, DIIs, mutual funds, insurance companies, and corporates with in-depth research coverage.",
+};
 
 export default function InstitutionEquityPage() {
   return (

@@ -1,23 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync, writeFileSync } from 'fs';
-import { join } from 'path';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
-import { sendActivationOTP } from '@/lib/email';
-import { sendSmsOTP, maskPhone } from '@/lib/sms';
 import { checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/lib/rate-limiter';
 import { createClientToken } from '@/lib/auth';
-
-interface ClientData {
-  clientId: string;
-  name: string;
-  email?: string;
-  mobile?: string;
-  password?: string;
-  accountStatus?: string;
-  accountOpenDate?: string;
-  requiresActivation?: boolean;
-}
+import { findClientById } from '@/lib/client-db';
+import { sendClientActivationOTP, type SendOtpResult } from '@/lib/client-otp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,18 +38,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const dataDir = join(process.cwd(), 'data');
-    const clientsFilePath = join(dataDir, 'clients.json');
-
-    if (!existsSync(clientsFilePath)) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
-
-    const clientsData = JSON.parse(readFileSync(clientsFilePath, 'utf8'));
-    const client = clientsData.find((c: ClientData) => c.clientId === clientId);
+    const client = findClientById(clientId);
 
     if (!client) {
       // Record failed attempt so attackers can't enumerate valid client IDs freely
@@ -75,12 +51,12 @@ export async function POST(request: NextRequest) {
 
     // ─── RESEND OTP ACTION ───
     if (action === 'resend_otp' || action === 'forgot_password') {
-      return await handleSendOTP(client, dataDir);
+      return sendOtpResponse(await sendClientActivationOTP(client));
     }
 
     // ─── FIRST-TIME ACTIVATION INTERCEPT ───
     if (client.requiresActivation) {
-      return await handleSendOTP(client, dataDir);
+      return sendOtpResponse(await sendClientActivationOTP(client));
     }
 
     // ─── STANDARD LOGIN (EXISTING PASSWORD) ───
@@ -146,86 +122,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Handles OTP generation and dispatch via SMS (primary) or email (fallback).
- * Returns the appropriate response with the OTP method used.
- */
-async function handleSendOTP(client: ClientData, dataDir: string) {
-  const hasMobile = client.mobile && client.mobile.trim().length >= 10;
-  const hasEmail = client.email && client.email.trim().length > 0 && client.email.includes('@');
-
-  if (!hasMobile && !hasEmail) {
-    return NextResponse.json(
-      { error: 'No registered mobile or email found. Please contact support to update your details.' },
-      { status: 403 }
-    );
+/** Adapts sendClientActivationOTP's result to this route's existing response shape. */
+function sendOtpResponse(result: SendOtpResult) {
+  if (result.ok === false) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
   }
-
-  // Generate a 6-digit OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // Store OTP
-  const otpsFilePath = join(dataDir, 'client-otps.json');
-  let otpsData: Record<string, any> = {};
-
-  if (existsSync(otpsFilePath)) {
-    try {
-      const fileRaw = readFileSync(otpsFilePath, 'utf8');
-      if (fileRaw.trim()) {
-        otpsData = JSON.parse(fileRaw);
-      }
-    } catch (e) { console.error(e); }
+  if (result.otpMethod === 'sms') {
+    return NextResponse.json({ requiresActivation: true, otpMethod: 'sms', maskedPhone: result.maskedPhone });
   }
-
-  otpsData[client.clientId] = {
-    otp,
-    expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
-  };
-
-  writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
-
-  // ─── TRY SMS FIRST ───
-  if (hasMobile) {
-    const smsResult = await sendSmsOTP(client.mobile!, otp);
-
-    if (smsResult.success) {
-      return NextResponse.json({
-        requiresActivation: true,
-        otpMethod: 'sms',
-        maskedPhone: maskPhone(client.mobile!)
-      });
-    }
-
-    // SMS failed — fall back to email if available
-    console.warn(`[OTP] SMS failed for ${client.clientId}: ${smsResult.error}. Falling back to email.`);
-  }
-
-  // ─── EMAIL FALLBACK ───
-  if (hasEmail) {
-    const emailSent = await sendActivationOTP(client.email!, otp, client.name);
-
-    if (!emailSent) {
-      return NextResponse.json(
-        { error: 'Failed to send activation code. Please try again later.' },
-        { status: 500 }
-      );
-    }
-
-    // Mask email
-    const parts = client.email!.split('@');
-    const prefix = parts[0].length > 2 ? parts[0].substring(0, 2) : parts[0];
-    const maskedEmail = prefix + '*'.repeat(Math.max(1, parts[0].length - 2)) + '@' + parts[1];
-
-    return NextResponse.json({
-      requiresActivation: true,
-      otpMethod: 'email',
-      maskedEmail
-    });
-  }
-
-  // Both failed (shouldn't reach here due to earlier check)
-  return NextResponse.json(
-    { error: 'Unable to send verification code. Please contact support.' },
-    { status: 500 }
-  );
+  return NextResponse.json({ requiresActivation: true, otpMethod: 'email', maskedEmail: result.maskedEmail });
 }

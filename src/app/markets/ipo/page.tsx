@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "IPO Center",
+  description: "Track upcoming and ongoing IPOs, and apply online through Sunidhi Securities.",
+};
 
 export default function IPOPage() {
   return (

@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Shield, Lock, FileText, AlertCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How Sunidhi Securities collects, uses, and protects your personal data, in line with the DPDP Act.",
+};
 
 export default function PrivacyPolicyPage() {
   return (
@@ -23,10 +29,10 @@ export default function PrivacyPolicyPage() {
             {/* Key Principles */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Lock className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <Lock className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Confidentiality Commitment
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-700 leading-relaxed">
@@ -41,10 +47,10 @@ export default function PrivacyPolicyPage() {
             {/* Information Usage */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <FileText className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Information Usage
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -65,10 +71,10 @@ export default function PrivacyPolicyPage() {
             {/* Third-Party Sharing */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <AlertCircle className="h-6 w-6 text-primary-600" />
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <AlertCircle className="h-6 w-6 text-primary-600" aria-hidden="true" />
                   Third-Party Sharing
-                </CardTitle>
+                </h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -95,7 +101,7 @@ export default function PrivacyPolicyPage() {
             {/* External Content Disclaimer */}
             <Card>
               <CardHeader>
-                <CardTitle>External Content Disclaimer</CardTitle>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight">External Content Disclaimer</h2>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">

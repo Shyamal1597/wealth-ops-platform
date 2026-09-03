@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Shield, Zap, CheckCircle2, Clock, LineChart, ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Retail Equity & Equity Trading",
+  description: "Pioneers of online market trading in India — equity, commodity, and currency trading with dedicated trading platforms and market access.",
+};
 
 export default function RetailEquityPage() {
   return (

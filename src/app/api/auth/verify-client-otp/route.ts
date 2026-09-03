@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import { checkRateLimit, recordFailedAttempt, clearFailedAttempts } from '@/lib/rate-limiter';
+import { getOtp } from '@/lib/client-db';
 
 export async function POST(request: NextRequest) {
     try {
@@ -30,23 +29,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const dataDir = join(process.cwd(), 'data');
-        const otpsFilePath = join(dataDir, 'client-otps.json');
-
-        if (!existsSync(otpsFilePath)) {
-            recordFailedAttempt(otpRateLimitKey);
-            return NextResponse.json(
-                { error: 'Invalid or expired OTP' },
-                { status: 400 }
-            );
-        }
-
-        let otpsData: Record<string, any> = {};
-        try {
-            otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8'));
-        } catch (e) { }
-
-        const record = otpsData[clientId];
+        const record = getOtp(clientId);
 
         // Combine validity + expiry check to avoid timing oracle
         if (!record || record.otp !== otp || Date.now() > record.expiresAt) {

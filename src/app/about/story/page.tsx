@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Award, Users, TrendingUp, Target, Heart, BookOpen, Quote } from "lucide-react";
 import { MarqueeBanner } from "@/components/ui/MarqueeBanner";
+
+export const metadata: Metadata = {
+  title: "Our Story",
+  description: "Discover Sunidhi Securities' 69+ year journey since 1957 — our history, values, and growth into a trusted SEBI-registered stock broker.",
+};
 
 export default function OurStoryPage() {
   return (

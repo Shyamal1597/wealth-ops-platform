@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown, Search, LogOut, User, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -78,18 +78,19 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <ClientSessionAnnouncer />
       {/* Top Bar */}
       <div className="bg-primary-600 text-white text-sm">
         <Container>
-          <div className="flex justify-between items-center py-2">
-            <div className="flex gap-6">
+          <div className="flex justify-center items-center py-2 gap-10">
+            <div className="hidden lg:flex gap-6">
               <span>{yearsOfExcellence}+ Years of Excellence</span>
               <span>|</span>
               <span>100+ Locations</span>
               <span>|</span>
               <span>50,000+ Happy Clients</span>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center ml-auto md:ml-0">
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
                 className="hover:underline flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white rounded border-none"
@@ -98,19 +99,19 @@ export default function Header() {
                 aria-controls="global-search-bar"
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
-                Search
+                <span className="hidden md:inline">Search</span>
               </button>
-              <Link href="/support/contact" className="hover:underline">
+              <Link href="/support/contact" className="hidden md:inline hover:underline">
                 Support
               </Link>
-              <Link href="/support/help" className="hover:underline">
+              <Link href="/support/help" className="hidden md:inline hover:underline">
                 Help
               </Link>
               <a
                 href="https://www.sunidhi.com/default.aspx"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border border-white/60 bg-white/10 text-white text-xs font-semibold hover:bg-white hover:text-primary-700 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border border-white/60 bg-white/10 text-white text-xs font-semibold hover:bg-white hover:text-primary-700 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
                 aria-label="Visit old Sunidhi website (opens in a new tab)"
               >
                 <ExternalLink className="h-3 w-3" aria-hidden="true" />
@@ -137,7 +138,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
+          <div className="hidden xl:flex flex-wrap items-center gap-x-2 gap-y-2 flex-1 justify-center">
             <NavDropdown title="About" items={navigation.about} />
             <NavDropdown title="Expertise" items={navigation.expertise} />
             <NavDropdown title="Markets & Research" items={navigation.markets} />
@@ -151,7 +152,7 @@ export default function Header() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+          <div className="hidden xl:flex items-center gap-3 flex-shrink-0">
             <ClientLoginDropdown />
             <SettingsDropdown />
             <Button size="sm" asChild>
@@ -161,7 +162,7 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 -mr-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="xl:hidden p-2 -mr-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation-menu"
@@ -215,7 +216,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div id="mobile-navigation-menu" className="lg:hidden border-t border-gray-200" aria-label="Mobile navigation">
+        <div id="mobile-navigation-menu" className="xl:hidden border-t border-gray-200" aria-label="Mobile navigation">
           <Container>
             <div className="py-4 space-y-4">
               <MobileNavSection title="About" items={navigation.about} onItemClick={closeMobileMenu} />
@@ -240,6 +241,7 @@ export default function Header() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={closeMobileMenu}
+                  aria-label="Visit Old Website (opens in a new tab)"
                   className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
@@ -256,6 +258,7 @@ export default function Header() {
 
 function NavDropdown({ title, items }: { title: string; items: { name: string; href: string; external?: boolean }[] }) {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   let timeoutId: NodeJS.Timeout;
 
   const handleMouseEnter = () => {
@@ -278,7 +281,33 @@ function NavDropdown({ title, items }: { title: string; items: { name: string; h
     }
   };
 
+  // 2.4.3 Focus Order — Escape always closes and returns focus to the trigger;
+  // Tab/Shift+Tab off either end of the menu collapses it instead of leaving a
+  // stale open panel behind while focus moves on to the next control.
+  const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      triggerRef.current?.focus();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const menuItems = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+      const first = menuItems[0];
+      const last = menuItems[menuItems.length - 1];
+      if (!e.shiftKey && document.activeElement === last) {
+        setIsOpen(false);
+      } else if (e.shiftKey && document.activeElement === first) {
+        setIsOpen(false);
+      }
+    }
+  };
+
   const handleBlur = (e: React.FocusEvent) => {
+    // If the window itself lost focus (e.g. a target="_blank" menu item was
+    // just activated and opened a new tab), don't close — the user hasn't
+    // actually left this menu, and closing here loses their place entirely
+    // by the time they switch back to this tab.
+    if (!document.hasFocus()) return;
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsOpen(false);
     }
@@ -292,6 +321,7 @@ function NavDropdown({ title, items }: { title: string; items: { name: string; h
       onBlur={handleBlur}
     >
       <button
+        ref={triggerRef}
         className="flex items-center gap-1 text-gray-700 hover:text-primary-600 font-medium focus:outline-none focus:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
@@ -307,6 +337,7 @@ function NavDropdown({ title, items }: { title: string; items: { name: string; h
           className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 flex flex-col"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onKeyDown={handleMenuKeyDown}
           role="menu"
           aria-label={title}
         >
@@ -317,6 +348,7 @@ function NavDropdown({ title, items }: { title: string; items: { name: string; h
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${item.name} (opens in a new tab)`}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
                 role="menuitem"
               >
@@ -360,6 +392,7 @@ function MobileNavSection({ title, items, onItemClick }: { title: string; items:
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${item.name} (opens in a new tab)`}
                 className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
                 onClick={onItemClick}
                 role="menuitem"
@@ -386,6 +419,7 @@ function MobileNavSection({ title, items, onItemClick }: { title: string; items:
 
 function ClientLoginDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   let timeoutId: NodeJS.Timeout;
 
   const handleMouseEnter = () => {
@@ -408,7 +442,31 @@ function ClientLoginDropdown() {
     }
   };
 
+  // 2.4.3 Focus Order — see NavDropdown for rationale.
+  const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      triggerRef.current?.focus();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const menuItems = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+      const first = menuItems[0];
+      const last = menuItems[menuItems.length - 1];
+      if (!e.shiftKey && document.activeElement === last) {
+        setIsOpen(false);
+      } else if (e.shiftKey && document.activeElement === first) {
+        setIsOpen(false);
+      }
+    }
+  };
+
   const handleBlur = (e: React.FocusEvent) => {
+    // If the window itself lost focus (e.g. a target="_blank" menu item was
+    // just activated and opened a new tab), don't close — the user hasn't
+    // actually left this menu, and closing here loses their place entirely
+    // by the time they switch back to this tab.
+    if (!document.hasFocus()) return;
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsOpen(false);
     }
@@ -422,6 +480,7 @@ function ClientLoginDropdown() {
       onBlur={handleBlur}
     >
       <Button
+        ref={triggerRef}
         variant="outline"
         size="sm"
         className="no-link-style flex items-center gap-1 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500"
@@ -439,6 +498,7 @@ function ClientLoginDropdown() {
           className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 flex flex-col"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onKeyDown={handleMenuKeyDown}
           role="menu"
           aria-label="Client Login Dropdown"
         >
@@ -446,6 +506,7 @@ function ClientLoginDropdown() {
             href={CLIENT_LOGINS.onlineTrading.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.onlineTrading.name} (opens in a new tab)`}
             className="no-link-style block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
             role="menuitem"
           >
@@ -455,6 +516,7 @@ function ClientLoginDropdown() {
             href={CLIENT_LOGINS.backoffice.client.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.backoffice.client.name} (opens in a new tab)`}
             className="no-link-style block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
             role="menuitem"
           >
@@ -464,6 +526,7 @@ function ClientLoginDropdown() {
             href={CLIENT_LOGINS.backoffice.branch.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.backoffice.branch.name} (opens in a new tab)`}
             className="no-link-style block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
             role="menuitem"
           >
@@ -473,6 +536,7 @@ function ClientLoginDropdown() {
             href={CLIENT_LOGINS.kycOnline.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.kycOnline.name} (opens in a new tab)`}
             className="no-link-style block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
             role="menuitem"
           >
@@ -482,6 +546,7 @@ function ClientLoginDropdown() {
             href={CLIENT_LOGINS.mutualFunds.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.mutualFunds.name} (opens in a new tab)`}
             className="no-link-style block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-visible:bg-gray-100 focus-visible:text-primary-600 focus-visible:outline-none"
             role="menuitem"
           >
@@ -501,10 +566,58 @@ function ClientLoginDropdown() {
   );
 }
 
+/**
+ * SettingsDropdown/MobileClientLoginSection unmount entirely when logged out
+ * (`if (!clientName) return null`), so there's no persistent element for an
+ * aria-live region to live inside. This sits outside that conditional and
+ * announces sign-in/sign-out so screen reader users are told the client name
+ * appeared, instead of it silently popping into the header.
+ */
+function ClientSessionAnnouncer() {
+  const [announcement, setAnnouncement] = useState('');
+  const previousName = useRef<string | null>(null);
+
+  useEffect(() => {
+    const checkSession = () => {
+      let name: string | null = null;
+      try {
+        const data = sessionStorage.getItem('clientData');
+        if (data) {
+          const parsed = JSON.parse(data);
+          name = parsed.name || parsed.clientId || 'Client';
+        }
+      } catch { name = null; }
+
+      if (name !== previousName.current) {
+        if (name) {
+          setAnnouncement(`Signed in as ${name}`);
+        } else if (previousName.current) {
+          setAnnouncement('Signed out');
+        }
+        previousName.current = name;
+      }
+    };
+    checkSession();
+    window.addEventListener('storage', checkSession);
+    window.addEventListener('clientSessionChange', checkSession);
+    return () => {
+      window.removeEventListener('storage', checkSession);
+      window.removeEventListener('clientSessionChange', checkSession);
+    };
+  }, []);
+
+  return (
+    <div aria-live="polite" aria-atomic="true" className="sr-only">
+      {announcement}
+    </div>
+  );
+}
+
 function SettingsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [clientName, setClientName] = useState<string | null>(null);
   const router = useRouter();
+  const triggerRef = useRef<HTMLButtonElement>(null);
   let timeoutId: NodeJS.Timeout;
 
   useEffect(() => {
@@ -559,7 +672,31 @@ function SettingsDropdown() {
     }
   };
 
+  // 2.4.3 Focus Order — see NavDropdown for rationale.
+  const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      triggerRef.current?.focus();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const menuItems = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+      const first = menuItems[0];
+      const last = menuItems[menuItems.length - 1];
+      if (!e.shiftKey && document.activeElement === last) {
+        setIsOpen(false);
+      } else if (e.shiftKey && document.activeElement === first) {
+        setIsOpen(false);
+      }
+    }
+  };
+
   const handleBlur = (e: React.FocusEvent) => {
+    // If the window itself lost focus (e.g. a target="_blank" menu item was
+    // just activated and opened a new tab), don't close — the user hasn't
+    // actually left this menu, and closing here loses their place entirely
+    // by the time they switch back to this tab.
+    if (!document.hasFocus()) return;
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsOpen(false);
     }
@@ -575,6 +712,7 @@ function SettingsDropdown() {
         onBlur={handleBlur}
       >
         <Button
+          ref={triggerRef}
           variant="outline"
           size="sm"
           className="no-link-style flex items-center gap-1.5 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500"
@@ -593,6 +731,7 @@ function SettingsDropdown() {
             className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 flex flex-col"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onKeyDown={handleMenuKeyDown}
             role="menu"
             aria-label="User menu"
           >
@@ -658,6 +797,7 @@ function MobileClientLoginSection({ onItemClick }: { onItemClick: () => void }) 
             href={CLIENT_LOGINS.onlineTrading.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`${CLIENT_LOGINS.onlineTrading.name} (opens in a new tab)`}
             className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
             role="menuitem"
@@ -668,8 +808,10 @@ function MobileClientLoginSection({ onItemClick }: { onItemClick: () => void }) 
             href={CLIENT_LOGINS.backoffice.client.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-gray-600 hover:text-primary-600"
+            aria-label={`${CLIENT_LOGINS.backoffice.client.name} (opens in a new tab)`}
+            className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
+            role="menuitem"
           >
             {CLIENT_LOGINS.backoffice.client.name}
           </a>
@@ -677,8 +819,10 @@ function MobileClientLoginSection({ onItemClick }: { onItemClick: () => void }) 
             href={CLIENT_LOGINS.backoffice.branch.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-gray-600 hover:text-primary-600"
+            aria-label={`${CLIENT_LOGINS.backoffice.branch.name} (opens in a new tab)`}
+            className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
+            role="menuitem"
           >
             {CLIENT_LOGINS.backoffice.branch.name}
           </a>
@@ -686,8 +830,10 @@ function MobileClientLoginSection({ onItemClick }: { onItemClick: () => void }) 
             href={CLIENT_LOGINS.kycOnline.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-gray-600 hover:text-primary-600"
+            aria-label={`${CLIENT_LOGINS.kycOnline.name} (opens in a new tab)`}
+            className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
+            role="menuitem"
           >
             {CLIENT_LOGINS.kycOnline.name}
           </a>
@@ -695,16 +841,19 @@ function MobileClientLoginSection({ onItemClick }: { onItemClick: () => void }) 
             href={CLIENT_LOGINS.mutualFunds.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-sm text-gray-600 hover:text-primary-600"
+            aria-label={`${CLIENT_LOGINS.mutualFunds.name} (opens in a new tab)`}
+            className="block text-sm text-gray-600 hover:text-primary-600 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
+            role="menuitem"
           >
             {CLIENT_LOGINS.mutualFunds.name}
           </a>
-          <div className="my-1 border-t border-gray-100" />
+          <div className="my-1 border-t border-gray-100" role="separator" />
           <Link
             href="/research-login?redirect=/markets/sip-products"
-            className="block text-sm font-medium text-primary-600 hover:text-primary-700 px-2 py-1"
+            className="block text-sm font-medium text-primary-600 hover:text-primary-700 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-500 rounded px-2 py-1"
             onClick={onItemClick}
+            role="menuitem"
           >
             Direct Equity SIP
           </Link>
@@ -750,7 +899,7 @@ function MobileSettingsSection({ onItemClick }: { onItemClick: () => void }) {
   return (
       <div className="space-y-2">
         <div className="px-4 py-2 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-xs text-green-600">Signed in as</p>
+          <p className="text-xs text-green-700">Signed in as</p>
           <p className="text-sm font-medium text-green-800 truncate">{clientName}</p>
         </div>
         <Link

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { createClientToken } from '@/lib/auth';
+import { findClientById, updateClient, getOtp, deleteOtp } from '@/lib/client-db';
 
 export async function POST(request: NextRequest) {
     try {
@@ -23,22 +22,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const dataDir = join(process.cwd(), 'data');
-        const otpsFilePath = join(dataDir, 'client-otps.json');
-        const clientsFilePath = join(dataDir, 'clients.json');
-
         // 1. Validate OTP again
-        if (!existsSync(otpsFilePath)) {
-            return NextResponse.json(
-                { error: 'Invalid or expired OTP' },
-                { status: 400 }
-            );
-        }
-
-        let otpsData: Record<string, any> = {};
-        try { otpsData = JSON.parse(readFileSync(otpsFilePath, 'utf8')); } catch (e) { }
-
-        const record = otpsData[clientId];
+        const record = getOtp(clientId);
         if (!record || record.otp !== otp || Date.now() > record.expiresAt) {
             return NextResponse.json(
                 { error: 'Invalid or expired OTP. Please start over.' },
@@ -47,39 +32,25 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Validate Client
-        if (!existsSync(clientsFilePath)) {
-            return NextResponse.json(
-                { error: 'Client database not found' },
-                { status: 500 }
-            );
-        }
-
-        let clientsData: any[] = [];
-        try { clientsData = JSON.parse(readFileSync(clientsFilePath, 'utf8')); } catch (e) { }
-
-        const clientIndex = clientsData.findIndex((c: any) => c.clientId === clientId);
-        if (clientIndex === -1) {
+        const existingClient = findClientById(clientId);
+        if (!existingClient) {
             return NextResponse.json(
                 { error: 'Client not found' },
                 { status: 404 }
             );
         }
 
-        const client = clientsData[clientIndex];
-
         // 3. Update Password & Activate
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        client.password = hashedPassword;
-        delete client.requiresActivation;
-        client.accountStatus = 'active';
-        client.accountOpenDate = client.accountOpenDate || new Date().toISOString().split('T')[0];
-
-        clientsData[clientIndex] = client;
-        writeFileSync(clientsFilePath, JSON.stringify(clientsData, null, 2));
+        const client = updateClient(clientId, {
+            password: hashedPassword,
+            requiresActivation: false,
+            accountStatus: 'active',
+            accountOpenDate: existingClient.accountOpenDate || new Date().toISOString().split('T')[0],
+        })!;
 
         // 4. Cleanup OTP
-        delete otpsData[clientId];
-        writeFileSync(otpsFilePath, JSON.stringify(otpsData, null, 2));
+        deleteOtp(clientId);
 
         // Issue HttpOnly client-token cookie so the research API can verify the session
         const clientToken = createClientToken(client.clientId, client.name);

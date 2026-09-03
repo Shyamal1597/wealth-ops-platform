@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Download, Shield, Users, TrendingUp, CheckCircle2, AlertCircle, Mail } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Investor Charter",
+  description: "Client rights, service standards, and grievance redressal timelines as per the SEBI Investor Charter.",
+};
 
 export default function InvestorCharterPage() {
   return (
@@ -42,9 +48,10 @@ export default function InvestorCharterPage() {
                       href="/legal-documents/Investor_charter_DP.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label="View Depository Participant Charter PDF (opens in a new tab)"
                       className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
                     >
-                      <Download className="h-5 w-5" />
+                      <Download className="h-5 w-5" aria-hidden="true" />
                       View PDF
                     </a>
                   </div>
@@ -157,15 +164,15 @@ export default function InvestorCharterPage() {
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">Electronic Mode</h3>
                       <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                        <li>SCORES 2.0: <a href="https://scores.sebi.gov.in/" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">https://scores.sebi.gov.in/</a></li>
-                        <li>CDSL Portal: <a href="https://www.cdslindia.com/Footer/grievances.aspx" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">www.cdslindia.com/Footer/grievances.aspx</a></li>
-                        <li>Email: <a href="mailto:complaints.redressal@sunidhi.com" className="text-primary-600 hover:text-primary-700">complaints.redressal@sunidhi.com</a></li>
+                        <li>SCORES 2.0: <a href="https://scores.sebi.gov.in/" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">https://scores.sebi.gov.in/</a></li>
+                        <li>CDSL Portal: <a href="https://www.cdslindia.com/Footer/grievances.aspx" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">www.cdslindia.com/Footer/grievances.aspx</a></li>
+                        <li>Email: <a href="mailto:complaints.redressal@sunidhi.com" className="text-primary-600 hover:text-primary-700 !underline">complaints.redressal@sunidhi.com</a></li>
                       </ul>
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">SMART ODR Platform</h3>
                       <p className="text-gray-700">
-                        For online conciliation and arbitration: <a href="https://smartodr.in/login" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">https://smartodr.in/login</a>
+                        For online conciliation and arbitration: <a href="https://smartodr.in/login" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">https://smartodr.in/login</a>
                       </p>
                     </div>
                   </CardContent>
@@ -197,9 +204,10 @@ export default function InvestorCharterPage() {
                       href="/legal-documents/Investor_Charter_in_respect_of_Research_Analyst_(RA).pdf"
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label="View Research Analyst Charter PDF (opens in a new tab)"
                       className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
                     >
-                      <Download className="h-5 w-5" />
+                      <Download className="h-5 w-5" aria-hidden="true" />
                       View PDF
                     </a>
                   </div>
@@ -324,9 +332,10 @@ export default function InvestorCharterPage() {
                       href="/legal-documents/1679937760Investor_complaints_Depository_Participant_Sunidhi.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label="View Investor Complaints Report PDF (opens in a new tab)"
                       className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
                     >
-                      <Download className="h-5 w-5" />
+                      <Download className="h-5 w-5" aria-hidden="true" />
                       View PDF
                     </a>
                   </div>
@@ -343,7 +352,7 @@ export default function InvestorCharterPage() {
                     <p className="text-gray-700"><strong>Company:</strong> Sunidhi Securities & Finance Ltd</p>
                     <p className="text-gray-700"><strong>DP ID:</strong> 23500 (IN-DP-410-2019)</p>
                     <p className="text-gray-700"><strong>CIN:</strong> U67190MH1985PLC037326</p>
-                    <p className="text-gray-700"><strong>Website:</strong> <a href="https://www.sunidhi.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700">www.sunidhi.com</a></p>
+                    <p className="text-gray-700"><strong>Website:</strong> <a href="https://www.sunidhi.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">www.sunidhi.com</a></p>
                     <p className="text-gray-700"><strong>Address:</strong> Kalpataru Inspire, 8th Floor, Off. Western Express Highway, Opp. Grand Hyatt Hotel, Santacruz (East), Mumbai 400055</p>
                     <p className="text-gray-700"><strong>Tel:</strong> +91 22 66771777</p>
                   </CardContent>

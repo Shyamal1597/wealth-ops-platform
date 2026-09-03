@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins, Award, TrendingUp, Building2, Banknote, ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Derivatives & Commodity Trading",
+  description: "Trade Futures & Options and commodities (gold, silver, crude oil) with Sunidhi's dedicated commodities dealing desk and derivatives research team.",
+};
 
 export default function CommoditiesTradingPage() {
   return (

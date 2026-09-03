@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Shield, CheckCircle2, BarChart3, FileText, Award } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Research",
+  description: "In-depth equity research with a focus on mid-cap and small-cap stocks aimed at delivering absolute returns.",
+};
 
 export default function ResearchPage() {
   return (

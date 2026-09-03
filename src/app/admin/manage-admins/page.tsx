@@ -193,6 +193,14 @@ export default function ManageAdminsPage() {
       category: "Content"
     },
 
+    // Client Access
+    {
+      id: "manage_clients",
+      label: "Manage Clients",
+      description: "Add new Client IDs (single or bulk) that can log in to the Research Reports and SIP Products portals",
+      category: "System"
+    },
+
     // Full Access
     {
       id: "manage_all_pages",
