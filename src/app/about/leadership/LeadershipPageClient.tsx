@@ -93,6 +93,9 @@ export default function LeadershipPage() {
       {/* Leadership Team */}
       <section className="py-16">
         <Container>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
+            Meet Our Leadership Team
+          </h2>
           {loading ? (
             <div className="text-center py-12">
               <p className="text-gray-500">Loading leadership team...</p>

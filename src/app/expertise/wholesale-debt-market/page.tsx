@@ -28,7 +28,7 @@ export default function WholesaleDebtMarketPage() {
                 Sunidhi is one of the oldest broking firms in India that offers Wholesale Debt Market (WDM) trading. We excel at broking services, economic research as well as in every money market instrument. We offer private placements of commercial papers, corporate debts, buying and selling of treasury bills, government securities, and state government loans. We are also sought to advice switch deals in government securities.
               </p>
 
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">The factors that make us a primary choice within WDM services are:</h3>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">The factors that make us a primary choice within WDM services are:</h2>
 
               <div className="grid md:grid-cols-2 gap-4 my-8">
                 <Card>

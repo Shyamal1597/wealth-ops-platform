@@ -30,6 +30,7 @@ export default function CommoditiesTradingPage() {
                 Sunidhi offers the best commodities trading platform in India with a robust dealing desk that comprises a strong and reliable team exclusively catering to the commodity market. Open trading account for commodity trading and access our commodity market expertise. We were the first recipients of a 'Gold Delivery on Exchange' on our client's behalf. Our commodity trading services include dealings in the capital market, enabled by physical presence in the commodity market.
               </p>
 
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">What Sets Us Apart</h2>
               <div className="grid md:grid-cols-2 gap-4 my-8">
                 <Card>
                   <CardContent className="p-6">

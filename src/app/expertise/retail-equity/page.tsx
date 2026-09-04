@@ -30,6 +30,7 @@ export default function RetailEquityPage() {
                 Retail Equity at Sunidhi comprises equity, commodity, internet, and currency trading. We pioneered online market trading in India. A few other factors that have contributed to our success in this offering include:
               </p>
 
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Factors Behind Our Success</h2>
               <div className="grid md:grid-cols-2 gap-4 my-8">
                 <Card>
                   <CardContent className="p-6">

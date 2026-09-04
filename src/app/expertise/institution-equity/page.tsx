@@ -28,6 +28,7 @@ export default function InstitutionEquityPage() {
                 Sunidhi has invested in the identification of small and midcap ideas with the help of a stringent and contemporary in-house research methodology, which are then meticulously filtered. Our ideas are pegged to deliver multi-fold returns over a period of time. Our Institution Equity division caters to clients across foreign institutional investors, MFs, insurance companies, banks, and portfolio management services.
               </p>
 
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">What Sets Us Apart</h2>
               <div className="grid md:grid-cols-2 gap-4 my-8">
                 <Card>
                   <CardContent className="p-6">
