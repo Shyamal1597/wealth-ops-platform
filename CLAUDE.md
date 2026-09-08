@@ -66,6 +66,9 @@ In production (HTTPS), omit the variable entirely.
 ### 6. Accessibility Is a Regulatory Requirement, Not Optional
 This site must meet **WCAG 2.2 Level AA** — mandated by SEBI's digital accessibility circulars (confirmed against the actual circular text; SEBI requires "WCAG 2.1 or the latest version" at AA level, and 2.2 is the current W3C Recommendation). **Read `ACCESSIBILITY_GUIDELINES.md` before building any new page or component.** It documents the exact recurring bugs a full external audit found (heading hierarchy via `CardTitle`'s hardcoded `<h3>`, insufficient color contrast on brand-color buttons, missing focus indicators, unlabeled icon-only controls, generic "Download"/"View" links repeated across a list, missing page titles on client components, keyboard focus order broken by responsive nav wrapping, etc.) and the established fix pattern for each. Most of these are one-line fixes if caught before shipping — they became a ~100-finding remediation project because they weren't.
 
+### 7. Keep Code Comments Minimal
+This is a public GitHub repo. Don't add explanatory comments to production code by default — no restating what a line already says, no paragraph-long justifications for why something was done a certain way. Default to no comment. Only comment when it's genuinely necessary: a real gotcha a future editor would otherwise trip over, a regulatory/compliance citation, or a dependency that isn't visible from the code itself.
+
 ---
 
 ## Key Data Files
