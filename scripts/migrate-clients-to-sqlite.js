@@ -1,15 +1,6 @@
 #!/usr/bin/env node
-/**
- * One-time migration: data/clients.json  →  data/clients.db (SQLite)
- *
- * Safe to re-run: refuses to touch an existing, non-empty clients.db unless
- * --force is passed. Does NOT delete or modify clients.json — it stays in
- * place as your immediate rollback/backup after migration.
- *
- * Usage:
- *   node scripts/migrate-clients-to-sqlite.js
- *   node scripts/migrate-clients-to-sqlite.js --force   (re-migrate from scratch)
- */
+// Migrates data/clients.json -> data/clients.db (SQLite). Usage:
+//   node scripts/migrate-clients-to-sqlite.js [--force]
 const path = require('path');
 const fs = require('fs');
 const Database = require('better-sqlite3');
@@ -85,9 +76,6 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_clients_mobile ON clients(mobile);
   CREATE INDEX IF NOT EXISTS idx_clients_status ON clients(accountStatus);
 
-  -- Replaces data/client-otps.json (same non-atomic whole-file-write concern
-  -- as clients.json above). Starts empty — OTPs are short-lived (10 min) and
-  -- nothing in data/client-otps.json is worth carrying forward.
   CREATE TABLE IF NOT EXISTS otps (
     otpKey    TEXT PRIMARY KEY,
     otp       TEXT NOT NULL,

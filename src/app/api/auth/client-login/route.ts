@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/** Adapts sendClientActivationOTP's result to this route's existing response shape. */
 function sendOtpResponse(result: SendOtpResult) {
   if (result.ok === false) {
     return NextResponse.json({ error: result.error }, { status: result.status });

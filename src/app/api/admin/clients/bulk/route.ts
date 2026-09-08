@@ -15,13 +15,6 @@ interface RawRow {
   mobile?: string;
 }
 
-/**
- * POST /api/admin/clients/bulk
- * Accepts a multipart upload (field name: "file") — CSV or XLSX with columns
- * clientId, name, email, mobile (header names case-insensitive; email/mobile
- * optional per-row but at least one required, matching the single-add rule).
- * Processed entirely in memory — never written to disk.
- */
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
   const adminToken = cookieStore.get('admin-token')?.value;
@@ -145,13 +138,8 @@ function parseXlsxRows(buffer: Buffer): string[][] {
   return rows.map((r) => r.map((c) => String(c ?? '')));
 }
 
-/**
- * Quote-aware CSV parser. A naive line.split(',') breaks on any quoted field
- * containing a comma (e.g. a name like "Doe, John") — it silently shifts every
- * column after it, which can misassign a client's email/mobile from the wrong
- * cell. This handles quoted fields (with embedded commas and escaped "" quotes)
- * and quoted newlines within a field.
- */
+// Quote-aware: a plain line.split(',') breaks on a quoted field containing a
+// comma (e.g. "Doe, John"), silently misaligning every column after it.
 function parseCsvRows(text: string): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];

@@ -1,24 +1,9 @@
 #!/usr/bin/env node
-/**
- * Trims data/clients.json down to only clients with active holdings, per
- * active-holdings-clients.json (exported from Active_holdings_clients.xlsx).
- *
- * IMPORTANT: this is designed to run against your REAL, LIVE data/clients.json
- * — not a stale copy — because for every client that matches the target list,
- * it preserves whatever is ALREADY in your live file (password hash,
- * accountStatus, accountOpenDate, requiresActivation) untouched. It never
- * invents or overwrites activation data. Clients in the target list who don't
- * exist in your live file yet are added as new pending (requiresActivation)
- * records, built from the target list's name/mobile/email.
- *
- * DRY RUN BY DEFAULT — prints exactly what would happen, changes nothing.
- * Add --apply to actually write the change (after making a timestamped backup
- * of your current clients.json automatically).
- *
- * Usage:
- *   node scripts/trim-clients-to-active-holdings.js              (dry run)
- *   node scripts/trim-clients-to-active-holdings.js --apply       (writes it)
- */
+// Trims data/clients.json to the client list in active-holdings-clients.json.
+// Run against your live clients.json, not a copy — matched clients keep
+// whatever is already in the live file untouched (password, activation status).
+// Dry run by default; pass --apply to write (auto-backs-up first).
+//   node scripts/trim-clients-to-active-holdings.js [--apply]
 const fs = require('fs');
 const path = require('path');
 
@@ -50,14 +35,14 @@ for (const c of live) {
 
 const result = [];
 let matched = 0;
-let matchedWithPassword = 0; // i.e. genuinely activated real clients being preserved
+let matchedWithPassword = 0;
 let added = 0;
 
 for (const row of target) {
   const key = String(row.clientId).trim().toUpperCase();
   const existing = liveById.get(key);
   if (existing) {
-    result.push(existing); // preserved EXACTLY as found in your live file
+    result.push(existing);
     matched++;
     if (existing.password) matchedWithPassword++;
   } else {

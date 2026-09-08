@@ -1,20 +1,6 @@
-/**
- * SQLite-backed client store, replacing the old data/clients.json flat file
- * (which held 220K+ records and was fully read/written into memory on every
- * login-related request — not viable long-term, and not safe under concurrent
- * writes since a whole-file read-modify-write is not atomic).
- *
- * Note on CLAUDE.md rule #1 ("never use in-memory singletons for shared state
- * — each API route is a separate module bundle"): that rule is about state
- * that lives ONLY in a JS variable with no disk backing (e.g. a Map), where
- * each bundle's copy is genuinely a different, disconnected object. This is
- * different: every bundle opens its own better-sqlite3 connection, but every
- * one of those connections points at the same file (data/clients.db) via
- * WAL mode, so state written by one route is immediately visible to another
- * — the file is the shared state, same as the old JSON approach, just with
- * real indexing and atomic writes instead of a 37MB read+parse+stringify+write
- * on every request.
- */
+// Each API route bundle opens its own connection, but all connections point at
+// the same data/clients.db file (WAL mode) — this is disk-backed shared state,
+// not the in-memory-singleton pattern CLAUDE.md rule #1 warns against.
 import Database from 'better-sqlite3';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
@@ -53,11 +39,8 @@ function getDb(): Database.Database {
   const dataDir = join(process.cwd(), 'data');
   if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
 
-  // Fail loudly rather than silently opening/creating an EMPTY clients.db if
-  // the one-time migration (scripts/migrate-clients-to-sqlite.js) hasn't run
-  // yet. Without this check, deploying this code before migrating would make
-  // every client login fail with a generic "invalid credentials" — a full,
-  // confusing client-portal outage instead of a clear startup error.
+  // Fail loudly if the one-time migration hasn't run yet, instead of silently
+  // opening an empty database.
   const jsonBackupExists = existsSync(join(dataDir, 'clients.json'));
   if (!existsSync(DB_PATH) && jsonBackupExists) {
     throw new Error(
@@ -67,7 +50,7 @@ function getDb(): Database.Database {
   }
 
   db = new Database(DB_PATH);
-  db.pragma('journal_mode = WAL'); // allows concurrent readers alongside the writer
+  db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
 
   db.exec(`
@@ -87,12 +70,6 @@ function getDb(): Database.Database {
     CREATE INDEX IF NOT EXISTS idx_clients_mobile ON clients(mobile);
     CREATE INDEX IF NOT EXISTS idx_clients_status ON clients(accountStatus);
 
-    -- Replaces data/client-otps.json. That was a whole-file read-modify-write
-    -- on every OTP request (login OTP, admin resend, profile mobile/email
-    -- change verification) — the same non-atomic-write race the clients
-    -- table above was built to fix, except *more* exposed here since OTP
-    -- requests are bursty around login rather than occasional profile edits.
-    -- A row-level SQLite write does not have that race.
     CREATE TABLE IF NOT EXISTS otps (
       otpKey    TEXT PRIMARY KEY,
       otp       TEXT NOT NULL,
@@ -153,7 +130,6 @@ export function findClientById(clientId: string): ClientRecord | null {
   return row ? rowToRecord(row) : null;
 }
 
-/** Looks up a client by email OR mobile matching the given contact string (used by forgot-client-id). */
 export function findClientByContact(contact: string): ClientRecord | null {
   const row = getDb()
     .prepare('SELECT * FROM clients WHERE email = ? OR mobile = ? LIMIT 1')
@@ -161,7 +137,6 @@ export function findClientByContact(contact: string): ClientRecord | null {
   return row ? rowToRecord(row) : null;
 }
 
-/** Partial update by clientId. Only provided fields are changed. Returns the updated record, or null if not found. */
 export function updateClient(clientId: string, updates: Partial<ClientRecord>): ClientRecord | null {
   const existing = findClientById(clientId);
   if (!existing) return null;
@@ -185,15 +160,9 @@ export function updateClient(clientId: string, updates: Partial<ClientRecord>): 
       clientId
     );
 
-  // merged already reflects exactly what was just written — no need to re-SELECT it.
   return merged;
 }
 
-/**
- * Creates a new client, always starting at requiresActivation = true (matches
- * how every existing client record behaves — no separate first-login path).
- * Returns null if the clientId already exists (caller should treat as 409).
- */
 export function createClient(
   data: { clientId: string; name: string; email?: string; mobile?: string },
   createdBy?: string
@@ -222,7 +191,6 @@ export interface BulkCreateResult {
   skipped: Array<{ clientId: string; reason: string }>;
 }
 
-/** Bulk insert (e.g. from a CSV upload), wrapped in one transaction. Duplicates/invalid rows are skipped, not fatal. */
 export function bulkCreateClients(
   records: Array<{ clientId: string; name: string; email?: string; mobile?: string }>,
   createdBy?: string

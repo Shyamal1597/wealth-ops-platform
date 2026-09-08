@@ -16,10 +16,6 @@ async function requireManageClients(): Promise<{ authorized: boolean; adminUsern
   return { authorized: true, adminUsername: admin.username };
 }
 
-/**
- * GET /api/admin/clients?search=&status=active|pending|all&page=&limit=
- * Paginated, searchable client list (never returns password hashes).
- */
 export async function GET(request: NextRequest) {
   const verification = await requireManageClients();
   if (!verification.authorized) {
@@ -34,8 +30,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const { clients, total } = listClients({ search, status, page, limit });
-    // Strip password hashes defensively even though client-db doesn't select it separately —
-    // it's part of ClientRecord, so remove it explicitly before it ever reaches the client.
     const sanitized = clients.map(({ password, ...rest }) => rest);
     return NextResponse.json({ clients: sanitized, total, page, limit });
   } catch (error) {
@@ -44,12 +38,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/admin/clients
- * Creates a single new client. Always starts requiresActivation = true —
- * same first-login (OTP) flow every existing client goes through.
- * Body: { clientId, name, email?, mobile? } — at least one of email/mobile required.
- */
 export async function POST(request: NextRequest) {
   const verification = await requireManageClients();
   if (!verification.authorized) {

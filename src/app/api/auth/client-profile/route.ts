@@ -55,9 +55,6 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Client not found' }, { status: 404 });
         }
 
-        // Accumulated as the various update paths below run; written via a single
-        // updateClient() call (or one per early-return point), instead of mutating
-        // an in-memory array element the way the old JSON-file version did.
         const pendingUpdates: Record<string, unknown> = {};
         let updated = false;
 

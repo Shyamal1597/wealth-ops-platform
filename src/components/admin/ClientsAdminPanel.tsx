@@ -46,18 +46,12 @@ export default function ClientsAdminPanel() {
 
   const [resendingId, setResendingId] = useState<string | null>(null);
 
-  // Debounce the raw search input — avoids firing a full-table-scan search
-  // request on every keystroke.
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
   }, [search]);
 
   const loadClients = useCallback(async () => {
-    // Tag each request so a slower, older response can't overwrite a newer one
-    // (e.g. typing a new search term while on page 3 fires a page-3 fetch and,
-    // once the page-reset effect below runs, a page-1 fetch — without this,
-    // whichever happens to resolve second wins, even if it's the stale one).
     const requestId = ++requestIdRef.current;
     setLoading(true);
     try {
@@ -84,7 +78,6 @@ export default function ClientsAdminPanel() {
 
   useEffect(() => { loadClients(); }, [loadClients]);
 
-  // Reset to page 1 whenever the (debounced) search/filter changes
   useEffect(() => { setPage(1); }, [debouncedSearch, statusFilter]);
 
   const handleAddClient = async (e: React.FormEvent) => {
@@ -178,8 +171,6 @@ export default function ClientsAdminPanel() {
         </div>
       )}
 
-      {/* Real page-section heading (CardTitle below hardcodes an h3 — a bare Card here would
-          otherwise jump straight from the dashboard's h1 to an h3 with no h2 in between). */}
       <h2 className="text-xl font-bold flex items-center gap-2">
         <Users className="h-5 w-5 text-primary-600" aria-hidden="true" />
         Clients

@@ -4,13 +4,6 @@ import { verifyAdminPermission } from '@/lib/admin-auth';
 import { findClientById } from '@/lib/client-db';
 import { sendClientActivationOTP } from '@/lib/client-otp';
 
-/**
- * POST /api/admin/clients/resend-activation
- * Body: { clientId }
- * Admin-triggered version of the OTP an activating client would request
- * themselves — useful when a client can't reach the portal (e.g. the
- * original notification bounced) but their contact details on file are correct.
- */
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
   const adminToken = cookieStore.get('admin-token')?.value;
