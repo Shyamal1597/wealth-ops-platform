@@ -2095,7 +2095,7 @@ export default function AdminDashboardPage() {
                             <td className="px-6 py-4">
                               <div className="flex gap-2">
                                 <a
-                                  href={report.filePath}
+                                  href={`/api/research/download?id=${report.id}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
