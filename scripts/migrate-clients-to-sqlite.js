@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-// Migrates data/clients.json -> data/clients.db (SQLite). Usage:
+// Manual/local-dev tool only — the app now migrates itself on first run
+// (see getDb() in src/lib/client-db.ts), so this is not required for any
+// deployment. Kept for local inspection and for --force, which the app
+// intentionally never does on its own. Usage:
 //   node scripts/migrate-clients-to-sqlite.js [--force]
 const path = require('path');
 const fs = require('fs');

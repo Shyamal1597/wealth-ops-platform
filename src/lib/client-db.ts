@@ -3,7 +3,7 @@
 // not the in-memory-singleton pattern CLAUDE.md rule #1 warns against.
 import Database from 'better-sqlite3';
 import { join } from 'path';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync } from 'fs';
 
 export interface ClientRecord {
   clientId: string;
@@ -30,24 +30,62 @@ interface ClientRow {
 }
 
 const DB_PATH = join(process.cwd(), 'data', 'clients.db');
+const JSON_BACKUP_PATH = join(process.cwd(), 'data', 'clients.json');
 
 let db: Database.Database | null = null;
+
+// One-time backfill from the legacy JSON export. Only ever called while the
+// clients table is empty (see getDb below), so it can never overwrite or
+// wipe live data — it has nothing to do if clients.db is already populated.
+// INSERT OR IGNORE makes it safe even if two route bundles race into this
+// on the same cold start: whichever finishes first wins, the other just
+// no-ops on the now-existing rows instead of throwing.
+function migrateFromJsonBackup(database: Database.Database): void {
+  if (!existsSync(JSON_BACKUP_PATH)) return;
+
+  let records: Array<Record<string, unknown>>;
+  try {
+    records = JSON.parse(readFileSync(JSON_BACKUP_PATH, 'utf-8'));
+  } catch {
+    return;
+  }
+  if (!Array.isArray(records)) return;
+
+  const insert = database.prepare(`
+    INSERT OR IGNORE INTO clients
+      (clientId, name, email, mobile, password, accountStatus, accountOpenDate, requiresActivation, createdAt, createdBy)
+    VALUES (@clientId, @name, @email, @mobile, @password, @accountStatus, @accountOpenDate, @requiresActivation, @createdAt, @createdBy)
+  `);
+
+  const insertAll = database.transaction((rows: typeof records) => {
+    const seen = new Set<string>();
+    for (const c of rows) {
+      const clientId = c.clientId as string | undefined;
+      if (!clientId || seen.has(clientId)) continue;
+      seen.add(clientId);
+      insert.run({
+        clientId,
+        name: (c.name as string) ?? '',
+        email: (c.email as string) ?? null,
+        mobile: (c.mobile as string) ?? null,
+        password: (c.password as string) ?? null,
+        accountStatus: (c.accountStatus as string) ?? null,
+        accountOpenDate: (c.accountOpenDate as string) ?? null,
+        requiresActivation: c.requiresActivation ? 1 : 0,
+        createdAt: null,
+        createdBy: null,
+      });
+    }
+  });
+
+  insertAll(records);
+}
 
 function getDb(): Database.Database {
   if (db) return db;
 
   const dataDir = join(process.cwd(), 'data');
   if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
-
-  // Fail loudly if the one-time migration hasn't run yet, instead of silently
-  // opening an empty database.
-  const jsonBackupExists = existsSync(join(dataDir, 'clients.json'));
-  if (!existsSync(DB_PATH) && jsonBackupExists) {
-    throw new Error(
-      'data/clients.db does not exist yet, but data/clients.json does. ' +
-      'Run `node scripts/migrate-clients-to-sqlite.js` before starting the app with this code.'
-    );
-  }
 
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL');
@@ -77,6 +115,9 @@ function getDb(): Database.Database {
       extra     TEXT
     );
   `);
+
+  const { c: clientCount } = db.prepare('SELECT COUNT(*) as c FROM clients').get() as { c: number };
+  if (clientCount === 0) migrateFromJsonBackup(db);
 
   return db;
 }
