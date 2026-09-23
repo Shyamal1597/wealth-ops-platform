@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,17 @@ export default function ContactPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Using a query param rather than a #hash here: App Router's own scroll
+  // restoration clears location.hash as soon as anything else scrolls the
+  // page (e.g. a manual scrollIntoView), which fights a hash-based approach.
+  useEffect(() => {
+    const scrollTo = new URLSearchParams(window.location.search).get("scrollTo");
+    if (!scrollTo) return;
+    // instant, not smooth — a smooth scroll here reliably gets cut short
+    // partway (React 18 Strict Mode double-invokes this effect in dev).
+    document.getElementById(scrollTo)?.scrollIntoView({ behavior: "instant", block: "start" });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,7 +329,7 @@ export default function ContactPage() {
           </div>
 
           {/* Escalation Matrix */}
-          <div className="mt-12">
+          <div className="mt-12" id="escalation-matrix">
             <Card>
               <CardHeader>
                 <h2 className="text-2xl font-semibold leading-none tracking-tight">Escalation Matrix</h2>
@@ -383,6 +394,23 @@ export default function ContactPage() {
                   <div className="flex gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
                     <div className="flex-shrink-0 w-20">
                       <span className="inline-block bg-primary-600 text-white text-xs font-semibold px-2 py-1 rounded">Level 4</span>
+                    </div>
+                    <div className="text-sm text-gray-700">
+                      <div className="font-semibold text-gray-900 mb-1">Escalate to Principal Nodal Officer</div>
+                      If still not satisfied after Level 1, Level 2 and Level 3, please send your complaint details to{" "}
+                      <span className="font-medium">Mahesh Desai</span> at{" "}
+                      <a href="mailto:mahesh.desai@sunidhi.com" className="text-primary-600 hover:text-primary-700 font-medium">
+                        mahesh.desai@sunidhi.com
+                      </a>{" "}
+                      or call on{" "}
+                      <span className="font-medium">(+91-22) 66771777</span>, who will help resolve your concern at the earliest.
+                    </div>
+                  </div>
+
+                  {/* Level 5 */}
+                  <div className="flex gap-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
+                    <div className="flex-shrink-0 w-20">
+                      <span className="inline-block bg-primary-600 text-white text-xs font-semibold px-2 py-1 rounded">Level 5</span>
                     </div>
                     <div className="text-sm text-gray-700">
                       <div className="font-semibold text-gray-900 mb-1">Approach the RBI and the Ombudsman</div>
