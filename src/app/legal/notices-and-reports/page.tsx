@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { FileText, Download, BookOpen, Users, Gavel } from "lucide-react";
+import { FileText, Download, BookOpen, Users, Gavel, CheckSquare, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Notices & Reports",
@@ -166,6 +166,50 @@ export default function AnnualReportsPage() {
                                         </a>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* E-Voting Section */}
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <CheckSquare className="h-5 w-5 text-green-600" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900">E-Voting</h2>
+                            </div>
+                            <p className="text-gray-600 mb-6 ml-13">
+                                Cast your vote electronically on resolutions passed at our Annual and Extra-Ordinary General Meetings, through either depository&apos;s e-voting portal.
+                            </p>
+
+                            <div className="space-y-3">
+                                <a
+                                    href="https://evoting.cdslindia.com/Evoting/EvotingLogin"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="CDSL e-Voting portal (opens in a new tab)"
+                                    className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-green-300 hover:shadow-md transition-all duration-200"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <ExternalLink className="h-5 w-5 text-green-500" aria-hidden="true" />
+                                        </div>
+                                        <h3 className="font-semibold text-gray-900">CDSL e-Voting Portal</h3>
+                                    </div>
+                                </a>
+                                <a
+                                    href="https://www.evoting.nsdl.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="NSDL e-Voting portal (opens in a new tab)"
+                                    className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:border-green-300 hover:shadow-md transition-all duration-200"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <ExternalLink className="h-5 w-5 text-green-500" aria-hidden="true" />
+                                        </div>
+                                        <h3 className="font-semibold text-gray-900">NSDL e-Voting Portal</h3>
+                                    </div>
+                                </a>
                             </div>
                         </div>
 

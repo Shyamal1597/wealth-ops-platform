@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Download, Shield, Users, TrendingUp, CheckCircle2, AlertCircle, Mail } from "lucide-react";
+import { FileText, Download, Shield, Users, TrendingUp, CheckCircle2, AlertCircle, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Investor Charter",
@@ -26,11 +26,287 @@ export default function InvestorCharterPage() {
       <section className="py-16">
         <Container>
           <div className="max-w-4xl mx-auto space-y-12">
-            {/* Section 1: Depository Participant (DP) */}
+            {/* Section 1: Stock Brokers */}
+            <div id="stock-broker">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <FileText className="h-8 w-8 text-primary-600" />
+                1. Investor Charter for Stock Brokers
+              </h2>
+
+              {/* Download PDF */}
+              <Card className="bg-gray-50 border-gray-300 mb-6">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-4">
+                      <FileText className="h-10 w-10 text-primary-600" />
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">Stock Broker Charter</h3>
+                        <p className="text-sm text-gray-600">SEBI Registration: INZ000169235</p>
+                      </div>
+                    </div>
+                    <a
+                      href="/legal-documents/Investor_Charter_Stock_Brokers.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="View Stock Broker Charter PDF (opens in a new tab)"
+                      className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+                    >
+                      <Download className="h-5 w-5" aria-hidden="true" />
+                      View PDF
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-6">
+                {/* Vision & Mission */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <TrendingUp className="h-6 w-6 text-primary-600" />
+                      Vision & Mission
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Vision</h3>
+                      <p className="text-gray-700">
+                        To follow highest standards of ethics and compliances while facilitating the trading by clients in securities in a fair and transparent manner, so as to contribute in creation of wealth for investors.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Mission</h3>
+                      <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                        <li>To provide high quality and dependable service through innovation, capacity enhancement and use of technology.</li>
+                        <li>To establish and maintain a relationship of trust and ethics with the investors.</li>
+                        <li>To observe highest standard of compliances and transparency.</li>
+                        <li>To always keep &lsquo;protection of investors&rsquo; interest&rsquo; as goal while providing service.</li>
+                        <li>To ensure confidentiality of information shared by investors unless such information is required to be provided in furtherance of discharging legal obligations or investors have provided specific consent to share such information.</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Services Provided */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Services Provided to Investors</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                      <li>Execution of trades on behalf of investors</li>
+                      <li>Issuance of Contract Notes</li>
+                      <li>Issuance of intimations regarding margin due payments</li>
+                      <li>Facilitate execution of early pay-in obligation instructions</li>
+                      <li>Periodic settlement of client&rsquo;s funds</li>
+                      <li>Issuance of retention statement of funds at the time of settlement</li>
+                      <li>Risk management systems to mitigate operational and market risk</li>
+                      <li>Facilitate client profile changes in the system as instructed by the client</li>
+                      <li>Information sharing with the client w.r.t. relevant Market Infrastructure Institutions (MII) circulars</li>
+                      <li>Provide a copy of Rights &amp; Obligations document to the client</li>
+                      <li>Communicating Most Important Terms and Conditions (MITC) to the client</li>
+                      <li>Redressal of investor&rsquo;s grievances</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Rights of Investors */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+                      Rights of Investors
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="grid md:grid-cols-2 gap-2 text-gray-700 list-disc list-inside">
+                      <li>Ask for and receive information about the firm and the person handling your account</li>
+                      <li>Receive complete information about risks, obligations, and costs before investing</li>
+                      <li>Receive a copy of all completed account forms and the Rights &amp; Obligations document</li>
+                      <li>Receive a copy of &lsquo;Most Important Terms &amp; Conditions&rsquo; (MITC)</li>
+                      <li>Receive accurate, understandable account statements</li>
+                      <li>Understand the terms and conditions of your transactions</li>
+                      <li>Access your funds in a prescribed manner, with notice of any restrictions</li>
+                      <li>Receive complete information on charges, fees, and penalties via a tariff sheet</li>
+                      <li>Discuss grievances with the compliance officer/team and receive prompt attention</li>
+                      <li>Close zero-balance accounts online with minimal documentation</li>
+                      <li>Get copies of all policies relating to dealings on your account</li>
+                      <li>Not be discriminated against relative to equivalent clients</li>
+                      <li>Receive only advertisement materials adhering to the Code of Advertisement norms</li>
+                      <li>Be compensated from the Exchange Investor Protection Fund in case of broker default</li>
+                      <li>Trade in derivatives after submitting relevant financial documents, subject to due diligence</li>
+                      <li>Get warnings on trading systems where surveillance measures are in place</li>
+                      <li>Get access to products and services in a suitable manner, even if differently abled</li>
+                      <li>Get access to educational materials of the MIIs and brokers</li>
+                      <li>Get access to all exchanges of a segment you deal with, unless opted out</li>
+                      <li>Deal with one or more stockbrokers of your choice, without minimum-business compulsion</li>
+                      <li>Have access to the escalation matrix for communication with the broker</li>
+                      <li>Not be bound by any broker clause that contravenes regulatory provisions</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+
+                {/* Activities & Timelines */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Clock className="h-6 w-6 text-primary-600" />
+                      Activities & Timelines
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="text-left p-3 font-semibold text-gray-900">Activity</th>
+                            <th className="text-left p-3 font-semibold text-gray-900">Expected Timeline</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                          <tr><td className="p-3 text-gray-700">KYC entered into KRA System and CKYCR</td><td className="p-3 text-gray-700">3 working days of account opening</td></tr>
+                          <tr><td className="p-3 text-gray-700">Client onboarding</td><td className="p-3 text-gray-700">Immediate, not later than one week</td></tr>
+                          <tr><td className="p-3 text-gray-700">Order execution</td><td className="p-3 text-gray-700">Immediate on receipt, not later than the same day</td></tr>
+                          <tr><td className="p-3 text-gray-700">Allocation of Unique Client Code</td><td className="p-3 text-gray-700">Before trading</td></tr>
+                          <tr><td className="p-3 text-gray-700">Copy of client registration documents</td><td className="p-3 text-gray-700">7 days from Unique Client Code upload to Exchange</td></tr>
+                          <tr><td className="p-3 text-gray-700">Issuance of contract notes</td><td className="p-3 text-gray-700">24 hours of execution of trades</td></tr>
+                          <tr><td className="p-3 text-gray-700">Collection of upfront margin from client</td><td className="p-3 text-gray-700">Before initiation of trade</td></tr>
+                          <tr><td className="p-3 text-gray-700">Intimation of other margin due payments</td><td className="p-3 text-gray-700">End of the T day</td></tr>
+                          <tr><td className="p-3 text-gray-700">Settlement of client funds</td><td className="p-3 text-gray-700">First Friday/Saturday of month/quarter per Exchange schedule</td></tr>
+                          <tr><td className="p-3 text-gray-700">Statement of Accounts (funds, securities, commodities)</td><td className="p-3 text-gray-700">Monthly basis</td></tr>
+                          <tr><td className="p-3 text-gray-700">Retention statement of funds/commodities</td><td className="p-3 text-gray-700">5 days from date of settlement</td></tr>
+                          <tr><td className="p-3 text-gray-700">Annual Global Statement</td><td className="p-3 text-gray-700">30 days from end of financial year</td></tr>
+                          <tr><td className="p-3 text-gray-700">Investor grievance redressal</td><td className="p-3 text-gray-700">21 calendar days from receipt of complaint</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Dos and Don'ts */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Users className="h-6 w-6 text-primary-600" />
+                      Do&apos;s and Don&apos;ts for Investors
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Do&apos;s</h3>
+                      <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                        <li>Read all documents and conditions before signing the account opening form</li>
+                        <li>Receive a copy of KYC, account opening documents, and your Unique Client Code</li>
+                        <li>Read the product/operational framework and timelines for trading and settlement</li>
+                        <li>Receive all information about brokerage, fees, and other charges levied</li>
+                        <li>Register your mobile number and email for regular transaction alerts</li>
+                        <li>If executed, receive a copy of your Demat Debit and Pledge Instruction (DDPI) — not mandatory; examine its scope carefully before granting</li>
+                        <li>Receive contract notes within 24 hours, showing price, brokerage, GST and STT/CTT</li>
+                        <li>Receive funds and securities/commodities on time, as prescribed by SEBI/exchange</li>
+                        <li>Verify trade details and statements; use Exchange trade verification facilities for discrepancies</li>
+                        <li>Receive periodic statements of account per your chosen settlement cycle</li>
+                        <li>Approach the broker, Exchange, or SEBI for any grievance within prescribed timelines</li>
+                        <li>Retain trading documents — they help resolve disputes if they arise</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Don&apos;ts</h3>
+                      <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                        <li>Do not deal with an unregistered stock broker</li>
+                        <li>Do not leave blanks in your account opening and KYC forms unstruck</li>
+                        <li>Do not submit an incomplete account opening or KYC form</li>
+                        <li>Do not forget to report any change of information and confirm it&apos;s updated</li>
+                        <li>Do not transfer funds to anyone other than the stock broker — never to an employee</li>
+                        <li>Do not ignore trade-related emails/SMSs from the Exchange; raise concerns on discrepancies</li>
+                        <li>Do not opt for digital contracts if unfamiliar with computers</li>
+                        <li>Do not share your trading password</li>
+                        <li>Do not fall for fixed/guaranteed-return schemes</li>
+                        <li>Do not fall for fraudulent emails/SMSs promising huge profits</li>
+                        <li>Do not follow herd mentality — seek expert, professional advice</li>
+                      </ul>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Investors may also refer to the Dos and Don&apos;ts issued by MIIs on their respective websites from time to time.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Grievance Redressal Mechanism */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Mail className="h-6 w-6 text-primary-600" />
+                      Grievance Redressal Mechanism
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">1. Lodging a complaint</h3>
+                      <p className="text-gray-700">
+                        With the stock broker: write to the designated Investor Grievance email ID — <a href="mailto:complaints.redressal@sunidhi.com" className="text-primary-600 hover:text-primary-700 !underline">complaints.redressal@sunidhi.com</a>. The broker will strive to redress the grievance immediately, and not later than 21 days.
+                      </p>
+                      <p className="text-gray-700 mt-2">
+                        With the stock exchanges: <a href="https://scores.sebi.gov.in/" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">SCORES 2.0</a> (a two-level review — first by the Exchange, then by SEBI), or by email to the Exchange&rsquo;s designated ID.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">2. Online Dispute Resolution (ODR)</h3>
+                      <p className="text-gray-700">
+                        If not satisfied with the Market Participant&rsquo;s resolution, file on the <a href="https://smartodr.in/login" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">SMART ODR</a> platform for resolution through online conciliation or arbitration.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">3. ODR process</h3>
+                      <ol className="space-y-1 text-gray-700 list-decimal list-inside">
+                        <li>Approach the Market Participant for redressal.</li>
+                        <li>If unsatisfied, escalate on SEBI SCORES and/or file on SMART ODR.</li>
+                        <li>The relevant MII reviews the matter and endeavours to resolve it within 21 days.</li>
+                        <li>If unresolved, the matter is referred for conciliation (21 days, extendable by 10 with consent).</li>
+                        <li>If conciliation fails, the investor may request arbitration (30 days, extendable by 30 with consent).</li>
+                      </ol>
+                    </div>
+                    <div>
+                      <a
+                        href="/forms/1936870993procedure_and_flow_chart_of_Client%20_grievance_Aug_08_2023.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="View our Escalation Matrix / Grievance Redressal Procedure flowchart (opens in a new tab)"
+                        className="text-primary-600 hover:text-primary-700 !underline"
+                      >
+                        View our Escalation Matrix / Grievance Redressal Procedure (flowchart)
+                      </a>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Handling of claims in case of broker default */}
+                <Card className="border-red-200 bg-red-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-red-900">
+                      <AlertCircle className="h-6 w-6 text-red-600" />
+                      Handling of Claims in Case of Broker Default
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 mb-3">If a stock broker defaults, the Stock Exchange:</p>
+                    <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                      <li>Issues a circular declaring the broker a defaulter, and publishes it on the Exchange website</li>
+                      <li>Issues a public notice inviting claims within a specified period</li>
+                      <li>Intimates clients of the defaulter via email/SMS to facilitate lodging claims</li>
+                      <li>Publishes eligibility norms for compensation from the Investor Protection Fund (IPF), a claim form, an FAQ, online claim-status tracking, an SOP for handling claims, and the claim-processing policy</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <hr className="border-t-2 border-gray-300" />
+
+            {/* Section 2: Depository Participant (DP) */}
             <div id="depository-participant">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <FileText className="h-8 w-8 text-primary-600" />
-                1. Investor Charter for Depository Participants
+                2. Investor Charter for Depository Participants
               </h2>
 
               {/* Download PDF */}
@@ -186,7 +462,7 @@ export default function InvestorCharterPage() {
             <div id="research-analyst">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <TrendingUp className="h-8 w-8 text-primary-600" />
-                2. Investor Charter for Research Analyst (RA)
+                3. Investor Charter for Research Analyst (RA)
               </h2>
 
               {/* Download PDF */}
@@ -310,11 +586,11 @@ export default function InvestorCharterPage() {
 
             <hr className="border-t-2 border-gray-300" />
 
-            {/* Section 3: Investor Complaints Data */}
+            {/* Section 4: Investor Complaints Data */}
             <div id="investor-complaints">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <AlertCircle className="h-8 w-8 text-primary-600" />
-                3. Investor Complaints Data - Depository Participant
+                4. Investor Complaints Data - Depository Participant
               </h2>
 
               {/* Download PDF */}

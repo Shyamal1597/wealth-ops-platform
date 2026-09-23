@@ -80,6 +80,53 @@ export default function RegulatoryInformationPage() {
               </CardContent>
             </Card>
 
+            {/* Rights & Obligations - Regional Languages */}
+            <Card>
+              <CardHeader>
+                <h2 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-3">
+                  <FileText className="h-6 w-6 text-primary-600" aria-hidden="true" />
+                  Rights &amp; Obligations, Risk Disclosure &amp; Guidance Note
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 mb-4">
+                  Rights and Obligations of Members, Authorised Persons and Clients, Risk Disclosure Document, and Guidance Note (Do&apos;s and Don&apos;ts for Clients), available in the language of your choice:
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                  {[
+                    ["English", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/english.zip?sfvrsn=2"],
+                    ["Assamese", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/assamese7cd8764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Bengali", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/bengali88e7764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Gujarati", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/gujarati5438774657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Hindi", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/hindi27e8764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Kannada", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/kannada58e8764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Kashmiri", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/kashmiria76a774657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Konkani", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/konkanib7e8764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Malayalam", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/malayalameee8764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Marathi", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/marathi15e9764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Oriya", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/oriya.zip?sfvrsn=2"],
+                    ["Punjabi", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/punjabi61e9764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Sindhi", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/sindhi88e9764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Tamil", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/tamilafe9764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Telugu", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/teleguaf38774657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                    ["Urdu", "https://www.mcxindia.com/docs/default-source/membership/vernacular-language/urdufde9764657fb64e3bdfdff00007acb35.zip?sfvrsn=2"],
+                  ].map(([lang, url]) => (
+                    <a
+                      key={lang}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Download Rights and Obligations document in ${lang} (opens in a new tab)`}
+                      className="flex items-center gap-1.5 text-primary-600 hover:text-primary-700 hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                      {lang}
+                    </a>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Additional Documentation for Derivatives Trading */}
             <Card>
               <CardHeader>
