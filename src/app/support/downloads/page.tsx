@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DownloadsPageClient from "./DownloadsPageClient";
+import { getDownloadsData } from "@/lib/downloads-store";
 
 export const metadata: Metadata = {
   title: "Downloads & Forms",
@@ -7,5 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default function DownloadsPage() {
-  return <DownloadsPageClient />;
+  const forms = getDownloadsData();
+  return <DownloadsPageClient forms={forms} />;
 }

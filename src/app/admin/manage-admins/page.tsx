@@ -101,6 +101,18 @@ export default function ManageAdminsPage() {
       category: "Content"
     },
     {
+      id: "manage_investor_complaints",
+      label: "Manage Investor Complaints Data",
+      description: "Upload monthly SEBI investor-complaints PDFs and update the yearly summary tables (Stock Broker, Research Analyst, Depository Participant)",
+      category: "Content"
+    },
+    {
+      id: "manage_downloads",
+      label: "Manage Downloads & Forms",
+      description: "Add, edit, remove, and reorder the forms and documents listed on the Downloads & Forms page",
+      category: "Content"
+    },
+    {
       id: "manage_daily_updates",
       label: "Manage Daily Updates",
       description: "Upload, edit, and manage Morning Buzz daily updates",

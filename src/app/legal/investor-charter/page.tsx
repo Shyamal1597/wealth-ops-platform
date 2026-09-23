@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Download, Shield, Users, TrendingUp, CheckCircle2, AlertCircle, Mail, Clock } from "lucide-react";
+import { getComplaintsData, totals, type ComplaintsSegment } from "@/lib/investor-complaints-store";
 
 export const metadata: Metadata = {
   title: "Investor Charter",
   description: "Client rights, service standards, and grievance redressal timelines as per the SEBI Investor Charter.",
 };
 
+const SEGMENT_ORDER: ComplaintsSegment[] = ["stock-broker", "research-analyst", "depository-participant"];
+
 export default function InvestorCharterPage() {
+  const complaintsData = getComplaintsData();
+
   return (
     <>
       <section className="bg-black text-white py-16">
@@ -590,143 +595,130 @@ export default function InvestorCharterPage() {
             <div id="investor-complaints">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <AlertCircle className="h-8 w-8 text-primary-600" />
-                4. Investor Complaints Data - Depository Participant
+                4. Investor Complaints Data
               </h2>
 
-              {/* Download PDF */}
-              <Card className="bg-gray-50 border-gray-300 mb-6">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-4">
-                      <FileText className="h-10 w-10 text-primary-600" />
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">Investor Complaints Report</h3>
-                        <p className="text-sm text-gray-600">Monthly complaint resolution data</p>
+              <div className="space-y-10">
+                {SEGMENT_ORDER.map((segment) => {
+                  const data = complaintsData[segment];
+                  const rowTotals = totals(data.yearlyData);
+                  const allResolved = rowTotals.pending === "NIL";
+
+                  return (
+                    <div key={segment}>
+                      <h3 className="text-xl font-bold text-gray-900 mb-4">{data.label}</h3>
+
+                      {/* Download PDF */}
+                      <Card className="bg-gray-50 border-gray-300 mb-6">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div className="flex items-center gap-4">
+                              <FileText className="h-10 w-10 text-primary-600" />
+                              <div>
+                                <h4 className="font-semibold text-gray-900 text-lg">Investor Complaints Report</h4>
+                                <p className="text-sm text-gray-600">
+                                  Monthly complaint resolution data
+                                  {data.pdfUpdatedAt && ` — updated ${new Date(data.pdfUpdatedAt).toLocaleDateString("en-IN", { year: "numeric", month: "long" })}`}
+                                </p>
+                              </div>
+                            </div>
+                            <a
+                              href={`/legal-documents/${data.pdfFileName}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`View ${data.label} Investor Complaints Report PDF (opens in a new tab)`}
+                              className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+                            >
+                              <Download className="h-5 w-5" aria-hidden="true" />
+                              View PDF
+                            </a>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <div className="space-y-6">
+                        {/* Company Information */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Company Information</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            <p className="text-gray-700"><strong>Company:</strong> Sunidhi Securities &amp; Finance Ltd</p>
+                            <p className="text-gray-700"><strong>{data.registrationLabel.split(":")[0]}:</strong>{data.registrationLabel.split(":")[1]}</p>
+                            <p className="text-gray-700"><strong>CIN:</strong> U67190MH1985PLC037326</p>
+                            <p className="text-gray-700"><strong>Website:</strong> <a href="https://www.sunidhi.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">www.sunidhi.com</a></p>
+                            <p className="text-gray-700"><strong>Address:</strong> Kalpataru Inspire, 8th Floor, Off. Western Express Highway, Opp. Grand Hyatt Hotel, Santacruz (East), Mumbai 400055</p>
+                            <p className="text-gray-700"><strong>Tel:</strong> +91 22 66771777</p>
+                          </CardContent>
+                        </Card>
+
+                        {/* Historical Complaints Data */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Historical Complaints Data</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead className="bg-gray-100">
+                                  <tr>
+                                    <th className="text-left p-3 font-semibold text-gray-900">Year</th>
+                                    <th className="text-left p-3 font-semibold text-gray-900">Carried Forward</th>
+                                    <th className="text-left p-3 font-semibold text-gray-900">Received</th>
+                                    <th className="text-left p-3 font-semibold text-gray-900">Resolved</th>
+                                    <th className="text-left p-3 font-semibold text-gray-900">Pending</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y">
+                                  {data.yearlyData.map((row) => (
+                                    <tr key={row.year}>
+                                      <td className="p-3 text-gray-700">{row.year}</td>
+                                      <td className="p-3 text-gray-700">{row.carriedForward}</td>
+                                      <td className="p-3 text-gray-700">{row.received}</td>
+                                      <td className="p-3 text-gray-700">{row.resolved}</td>
+                                      <td className="p-3 text-gray-700">{row.pending}</td>
+                                    </tr>
+                                  ))}
+                                  <tr className="bg-gray-50 font-semibold">
+                                    <td className="p-3 text-gray-900">Grand Total</td>
+                                    <td className="p-3 text-gray-900">{rowTotals.carriedForward}</td>
+                                    <td className="p-3 text-gray-900">{rowTotals.received}</td>
+                                    <td className="p-3 text-gray-900">{rowTotals.resolved}</td>
+                                    <td className="p-3 text-gray-900">{rowTotals.pending}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            {allResolved && (
+                              <p className="text-sm text-gray-600 mt-4">
+                                * All complaints received have been resolved with 100% resolution rate
+                              </p>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        {/* Performance Highlights */}
+                        {allResolved && (
+                          <Card className="border-green-200 bg-green-50">
+                            <CardHeader>
+                              <CardTitle className="flex items-center gap-3 text-green-900">
+                                <CheckCircle2 className="h-6 w-6 text-green-600" />
+                                Performance Highlights
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <ul className="space-y-2 text-gray-700 list-disc list-inside">
+                                <li><strong>100% Complaint Resolution Rate</strong> - All received complaints have been resolved</li>
+                                <li><strong>Zero Pending Complaints</strong> - No complaints remain unresolved</li>
+                                <li><strong>Consistent Performance</strong> - Maintained excellent resolution record across all years</li>
+                              </ul>
+                            </CardContent>
+                          </Card>
+                        )}
                       </div>
                     </div>
-                    <a
-                      href="/legal-documents/1679937760Investor_complaints_Depository_Participant_Sunidhi.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="View Investor Complaints Report PDF (opens in a new tab)"
-                      className="flex items-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-                    >
-                      <Download className="h-5 w-5" aria-hidden="true" />
-                      View PDF
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="space-y-6">
-                {/* Company Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Company Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <p className="text-gray-700"><strong>Company:</strong> Sunidhi Securities & Finance Ltd</p>
-                    <p className="text-gray-700"><strong>DP ID:</strong> 23500 (IN-DP-410-2019)</p>
-                    <p className="text-gray-700"><strong>CIN:</strong> U67190MH1985PLC037326</p>
-                    <p className="text-gray-700"><strong>Website:</strong> <a href="https://www.sunidhi.com" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-700 !underline">www.sunidhi.com</a></p>
-                    <p className="text-gray-700"><strong>Address:</strong> Kalpataru Inspire, 8th Floor, Off. Western Express Highway, Opp. Grand Hyatt Hotel, Santacruz (East), Mumbai 400055</p>
-                    <p className="text-gray-700"><strong>Tel:</strong> +91 22 66771777</p>
-                  </CardContent>
-                </Card>
-
-                {/* 5-Year Complaints Data */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Historical Complaints Data (Last 5 Years)</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gray-100">
-                          <tr>
-                            <th className="text-left p-3 font-semibold text-gray-900">Year</th>
-                            <th className="text-left p-3 font-semibold text-gray-900">Carried Forward</th>
-                            <th className="text-left p-3 font-semibold text-gray-900">Received</th>
-                            <th className="text-left p-3 font-semibold text-gray-900">Resolved</th>
-                            <th className="text-left p-3 font-semibold text-gray-900">Pending</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                          <tr>
-                            <td className="p-3 text-gray-700">2020-21</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-gray-700">2021-22</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">1</td>
-                            <td className="p-3 text-gray-700">1</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-gray-700">2022-23</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-gray-700">2023-24</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">2</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-gray-700">2024-25</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">3</td>
-                            <td className="p-3 text-gray-700">3</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-gray-700">2025-26</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                            <td className="p-3 text-gray-700">NIL</td>
-                          </tr>
-                          <tr className="bg-gray-50 font-semibold">
-                            <td className="p-3 text-gray-900">Grand Total</td>
-                            <td className="p-3 text-gray-900">NIL</td>
-                            <td className="p-3 text-gray-900">10</td>
-                            <td className="p-3 text-gray-900">10</td>
-                            <td className="p-3 text-gray-900">NIL</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-4">
-                      * All complaints received have been resolved with 100% resolution rate
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Performance Highlights */}
-                <Card className="border-green-200 bg-green-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-green-900">
-                      <CheckCircle2 className="h-6 w-6 text-green-600" />
-                      Performance Highlights
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-gray-700 list-disc list-inside">
-                      <li><strong>100% Complaint Resolution Rate</strong> - All received complaints have been resolved</li>
-                      <li><strong>Zero Pending Complaints</strong> - No complaints remain unresolved</li>
-                      <li><strong>Consistent Performance</strong> - Maintained excellent resolution record across all years</li>
-                      <li><strong>Current Status:</strong> No pending complaints as of November 2025</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                  );
+                })}
               </div>
             </div>
           </div>

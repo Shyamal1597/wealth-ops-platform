@@ -33,10 +33,13 @@ import {
   Building,
   Newspaper,
   BarChart3,
+  AlertCircle,
 } from "lucide-react";
 import { ResearchReport, RESEARCH_STRUCTURE } from "@/lib/research-types";
 import SIPProductsAdminPanel from "@/components/admin/SIPProductsAdminPanel";
 import ClientsAdminPanel from "@/components/admin/ClientsAdminPanel";
+import InvestorComplaintsAdminPanel from "@/components/admin/InvestorComplaintsAdminPanel";
+import DownloadsAdminPanel from "@/components/admin/DownloadsAdminPanel";
 
 interface AdminData {
   id: string;
@@ -153,7 +156,7 @@ export default function AdminDashboardPage() {
   const [foundationData, setFoundationData] = useState<FoundationData | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"feedbacks" | "reports" | "content" | "careers" | "awards" | "leadership" | "life" | "timeline" | "csr" | "foundation" | "blogs" | "sip" | "clients" | "daily_updates">("feedbacks");
+  const [activeTab, setActiveTab] = useState<"feedbacks" | "reports" | "content" | "careers" | "awards" | "leadership" | "life" | "timeline" | "csr" | "foundation" | "blogs" | "sip" | "clients" | "daily_updates" | "investor_complaints" | "downloads">("feedbacks");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showJobModal, setShowJobModal] = useState(false);
@@ -285,6 +288,8 @@ export default function AdminDashboardPage() {
     sip: "manage_sip_products",
     clients: "manage_clients",
     daily_updates: "manage_daily_updates",
+    investor_complaints: "manage_investor_complaints",
+    downloads: "manage_downloads",
   };
 
   const hasPermission = (permission: string): boolean => {
@@ -1887,6 +1892,32 @@ export default function AdminDashboardPage() {
                 Daily Updates ({dailyUpdates.length})
               </button>
             )}
+            {canAccessTab("investor_complaints") && (
+              <button
+                onClick={() => setActiveTab("investor_complaints")}
+                className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                  activeTab === "investor_complaints"
+                    ? "border-primary-600 text-primary-600"
+                    : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <AlertCircle className="inline h-5 w-5 mr-2" />
+                Investor Complaints
+              </button>
+            )}
+            {canAccessTab("downloads") && (
+              <button
+                onClick={() => setActiveTab("downloads")}
+                className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                  activeTab === "downloads"
+                    ? "border-primary-600 text-primary-600"
+                    : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <Download className="inline h-5 w-5 mr-2" />
+                Downloads &amp; Forms
+              </button>
+            )}
             {canAccessTab("content") && (
               <button
                 onClick={() => setActiveTab("content")}
@@ -3071,6 +3102,16 @@ export default function AdminDashboardPage() {
           {/* Clients Tab */}
           {canAccessTab("clients") && activeTab === "clients" && (
             <ClientsAdminPanel />
+          )}
+
+          {/* Investor Complaints Tab */}
+          {canAccessTab("investor_complaints") && activeTab === "investor_complaints" && (
+            <InvestorComplaintsAdminPanel />
+          )}
+
+          {/* Downloads & Forms Tab */}
+          {canAccessTab("downloads") && activeTab === "downloads" && (
+            <DownloadsAdminPanel />
           )}
 
           {/* Daily Updates Tab */}
