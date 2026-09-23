@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, Search, LogOut, User, ExternalLink } from "lucide-react";
+import { Menu, X, ChevronDown, Search, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { useRouter } from "next/navigation";
@@ -107,16 +107,6 @@ export default function Header() {
               <Link href="/support/help" className="hidden md:inline hover:underline">
                 Help
               </Link>
-              <a
-                href="https://www.sunidhi.com/default.aspx"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden md:inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border border-white/60 bg-white/10 text-white text-xs font-semibold hover:bg-white hover:text-primary-700 transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-                aria-label="Visit old Sunidhi website (opens in a new tab)"
-              >
-                <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                Old Website
-              </a>
             </div>
           </div>
         </Container>
@@ -236,17 +226,6 @@ export default function Header() {
                 <Button asChild onClick={closeMobileMenu}>
                   <Link href="/open-account">Open Account</Link>
                 </Button>
-                <a
-                  href="https://www.sunidhi.com/default.aspx"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={closeMobileMenu}
-                  aria-label="Visit Old Website (opens in a new tab)"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                  Visit Old Website
-                </a>
               </div>
             </div>
           </Container>
