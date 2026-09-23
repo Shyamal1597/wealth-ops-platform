@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/container";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, Clock, Building2, User } from "lucide-react";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -265,67 +265,6 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
             </div>
-          </div>
-
-          {/* NBFC Contact Information */}
-          <div className="mt-12">
-            <Card>
-              <CardHeader>
-                <h2 className="text-2xl font-semibold leading-none tracking-tight">Sunidhi Capital Pvt Ltd (NBFC)</h2>
-                <CardDescription>For loans, repayments, and NBFC-related queries</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-8">
-                  {/* Queries */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Building2 className="h-6 w-6 text-primary-600" />
-                      <h3 className="text-lg font-semibold text-gray-900">For Sunidhi Capital Queries</h3>
-                    </div>
-                    <p className="text-sm text-gray-600 font-medium">(NBFC – Loans and Repayments)</p>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">Phone:</div>
-                        <div className="text-sm text-gray-600">(+91-22) 66771777</div>
-                        <div className="text-sm text-gray-600">(+91-22) 43222777</div>
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">Email:</div>
-                        <a href="mailto:support@sunidhi.com" className="text-sm text-primary-600 hover:text-primary-700">
-                          support@sunidhi.com
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Grievances */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 mb-4">
-                      <User className="h-6 w-6 text-primary-600" />
-                      <h3 className="text-lg font-semibold text-gray-900">For Sunidhi Capital Grievances</h3>
-                    </div>
-                    <p className="text-sm text-gray-600 font-medium">(NBFC – Loans and Repayments)</p>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">Grievance Officer:</div>
-                        <div className="text-sm text-gray-700">Nikhil Rasal</div>
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">Phone:</div>
-                        <div className="text-sm text-gray-600">(+91-22) 66771777</div>
-                        <div className="text-sm text-gray-600">(+91-22) 43222777</div>
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900 text-sm">Email:</div>
-                        <a href="mailto:nikhil.r@sunidhi.com" className="text-sm text-primary-600 hover:text-primary-700">
-                          nikhil.r@sunidhi.com
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Escalation Matrix */}
